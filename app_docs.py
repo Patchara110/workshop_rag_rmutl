@@ -336,12 +336,15 @@ def generate_answer(query):
 
 # 7. สร้างอินเทอร์เฟซด้วย Streamlit
 def main():
-    st.title("RAG Chatbot สำหรับข้อมูลจังหวัดน่าน")
-    st.write("สวัสดี! ฉันคือ Chatbot ที่ช่วยตอบคำถามเกี่ยวกับจังหวัดน่าน")
+    st.title("RAG Chatbot เกี่ยวกับคาเฟ่ในอำเภอเมืองจังหวัดน่าน")
+    st.write("สวัสดี Chatbot ที่ช่วยตอบคำถามจากเอกสารที่มีอยู่")
 
-    # เพิ่มข้อมูลเอกสารลงใน Qdrant
+    # ดึงข้อมูลเอกสาร
+    documents = prepare_documents()
+
+    # เพิ่มข้อมูลลง Qdrant
     add_documents_to_qdrant(documents)
-    st.success("ข้อมูลเอกสารพร้อมใช้งานแล้ว!")
+    st.success("เอกสารถูกประมวลผลและพร้อมใช้งานแล้ว!")
 
     # รับคำถามจากผู้ใช้
     query = st.text_input("คุณ: ", placeholder="พิมพ์คำถามของคุณที่นี่...")
