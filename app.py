@@ -5,7 +5,8 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct, VectorParams, Distance
 from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
-from app_docs import get_documents  # ดึงข้อมูลจาก app_docs.py
+from pypdf import PdfReader
+from app_docs import get_additional_documents  # นำเข้าฟังก์ชันจาก app_docs.py
 
 # 1. โหลด environment variables จากไฟล์ .env
 load_dotenv()
@@ -19,12 +20,25 @@ qdrant_client.recreate_collection(
     vectors_config=VectorParams(size=384, distance=Distance.COSINE)  # ใช้ 384-D embedding
 )
 
-# 3. ดึงข้อมูลเอกสารจาก app_docs.py
-def prepare_documents():
-    documents = get_documents()
-    return [doc.strip() for doc in documents if doc.strip()]
+# 3. ฟังก์ชันสำหรับอ่านไฟล์ PDF และแยกข้อความ
+def extract_text_from_pdf(pdf_path):
+    reader = PdfReader(pdf_path)
+    text = ""
+    for page in reader.pages:
+        text += page.extract_text()
+    return text
 
-# 4. แปลงข้อความเป็นเวกเตอร์ และเพิ่มลงใน Qdrant
+# 4. เตรียมข้อมูลเอกสารจากไฟล์ PDF และ app_docs.py
+def prepare_documents(pdf_path):
+    pdf_text = extract_text_from_pdf(pdf_path)
+    pdf_documents = pdf_text.split("\n")
+    pdf_documents = [doc.strip() for doc in pdf_documents if doc.strip()]
+    
+    additional_documents = get_additional_documents()  # ดึงข้อมูลจาก app_docs.py
+    
+    return pdf_documents + additional_documents
+
+# 5. แปลงข้อความเป็นเวกเตอร์ และเพิ่มลงใน Qdrant
 def add_documents_to_qdrant(documents):
     embedding_model = SentenceTransformer("all-MiniLM-L6-v2")  # โหลดโมเดลสำหรับทำ Embedding
     vectors = embedding_model.encode(documents).tolist()  # แปลงข้อความเป็นเวกเตอร์
@@ -33,7 +47,7 @@ def add_documents_to_qdrant(documents):
     points = [PointStruct(id=i, vector=vectors[i], payload={"text": documents[i]}) for i in range(len(documents))]
     qdrant_client.upsert(collection_name="documents", points=points)
 
-# 5. สร้างฟังก์ชันการค้นหาเอกสาร
+# 6. สร้างฟังก์ชันการค้นหาเอกสาร
 def search_documents(query):
     embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
     query_vector = embedding_model.encode([query])[0].tolist()
@@ -44,7 +58,7 @@ def search_documents(query):
     )
     return [hit.payload["text"] for hit in search_results]
 
-# 6. สร้างฟังก์ชันการสร้างคำตอบด้วย Groq
+# 7. สร้างฟังก์ชันการสร้างคำตอบด้วย Groq
 def generate_answer(query):
     # ค้นหาข้อมูลที่เกี่ยวข้องจาก Qdrant
     retrieved_docs = search_documents(query)
@@ -65,29 +79,36 @@ def generate_answer(query):
 
     return response.choices[0].message.content
 
-# 7. สร้างอินเทอร์เฟซด้วย Streamlit
+# 8. สร้างอินเทอร์เฟซด้วย Streamlit
 def main():
     st.title("RAG Chatbot เกี่ยวกับคาเฟ่ในอำเภอเมืองจังหวัดน่าน")
     st.write("สวัสดี Chatbot ที่ช่วยตอบคำถามจากเอกสารที่มีอยู่")
 
-    # ดึงข้อมูลเอกสาร
-    documents = prepare_documents()
+    # กำหนด path ของไฟล์ PDF
+    pdf_path = "pdf/คาเฟ่ในอำเภอเมืองจังหวัดน่าน.pdf"
 
-    # เพิ่มข้อมูลลง Qdrant
-    add_documents_to_qdrant(documents)
-    st.success("เอกสารถูกประมวลผลและพร้อมใช้งานแล้ว!")
+    # ตรวจสอบว่าไฟล์ PDF มีอยู่
+    if os.path.exists(pdf_path):
+        # อ่านข้อความจากไฟล์ PDF และ app_docs.py
+        documents = prepare_documents(pdf_path)
 
-    # รับคำถามจากผู้ใช้
-    query = st.text_input("คุณ: ", placeholder="พิมพ์คำถามของคุณที่นี่...")
+        # เพิ่มข้อมูลลง Qdrant
+        add_documents_to_qdrant(documents)
+        st.success("เอกสาร PDF และข้อมูลเพิ่มเติมถูกประมวลผลและพร้อมใช้งานแล้ว!")
 
-    if st.button("ส่ง"):
-        if query:
-            # สร้างคำตอบ
-            answer = generate_answer(query)
-            st.write("Bot:", answer)
-        else:
-            st.warning("กรุณาพิมพ์คำถามก่อนส่ง")
+        # รับคำถามจากผู้ใช้
+        query = st.text_input("คุณ: ", placeholder="พิมพ์คำถามของคุณที่นี่...")
 
-# 8. เรียกใช้แอปพลิเคชัน
+        if st.button("ส่ง"):
+            if query:
+                # สร้างคำตอบ
+                answer = generate_answer(query)
+                st.write("Bot:", answer)
+            else:
+                st.warning("กรุณาพิมพ์คำถามก่อนส่ง")
+    else:
+        st.error(f"ไม่พบไฟล์ PDF ที่ path: {pdf_path}")
+
+# 9. เรียกใช้แอปพลิเคชัน
 if __name__ == "__main__":
     main()
