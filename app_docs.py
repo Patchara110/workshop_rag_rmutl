@@ -20,7 +20,9 @@ qdrant_client.recreate_collection(
 )
 
 # 3. ข้อมูลเอกสารที่กำหนดเอง
-documents = [
+def get_additional_documents():
+    # Return a list of additional documents
+    additional_documents = [
    {
   "cafes": [
     {
@@ -290,8 +292,8 @@ documents = [
   }
   ]
 }
-
 ]
+return additional_documents
 
 # 4. แปลงข้อความเป็นเวกเตอร์ และเพิ่มลงใน Qdrant
 def add_documents_to_qdrant(documents):
