@@ -37,7 +37,7 @@ def prepare_documents_from_pdf(pdf_path):
 def add_documents_to_qdrant(documents):
     embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
     vectors = embedding_model.encode(documents).tolist()
-    
+
     points = [PointStruct(id=i, vector=vectors[i], payload={"text": documents[i]}) for i in range(len(documents))]
     qdrant_client.upsert(collection_name="cafe_documents", points=points)
 
@@ -72,13 +72,15 @@ def generate_answer(query):
         {"role": "user", "content": f"ข้อมูลอ้างอิง:\n{context}\n\nคำถาม: {query}\n\nคำตอบ:"}
     ]
 
-    groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-    response = groq_client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=prompt
-    )
-
-    return response.choices[0].message.content
+    try:
+        groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+        response = groq_client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=prompt
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"เกิดข้อผิดพลาดในการติดต่อกับ Groq: {e}"
 
 # อินเทอร์เฟซ Streamlit
 def main():
