@@ -5,7 +5,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct, VectorParams, Distance
 from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
-from pypdf import PdfReader
+from PyPDF2 import PdfReader
 
 # โหลด environment variables
 load_dotenv()
@@ -100,6 +100,6 @@ def main():
         else:
             st.warning("กรุณาพิมพ์คำถามก่อนส่ง")
 
-#เรียกใช้แอปพลิเคชัน
-    if __name__ == "__main__":
-        main()
+# เรียกใช้แอปพลิเคชัน
+if __name__ == "__main__":
+    main()
