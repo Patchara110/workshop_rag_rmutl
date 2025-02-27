@@ -77,15 +77,15 @@ def generate_answer(query):
 
 # 8. สร้างอินเทอร์เฟซด้วย Streamlit
 def main():
-    st.title("RAG Chatbot สำหรับเอกสาร PDF")
-    st.write("สวัสดี! ฉันคือ Chatbot ที่ช่วยตอบคำถามจากเอกสาร PDF")
+    st.title("RAG Chatbot เกี่ยวกับคาเฟ่ในอำเภอเมือง จังหวัดน่าน")
+    st.write("สวัสดี! ฉันคือ Chatbot ที่ช่วยตอบคำถามเกี่ยวกับคาเฟ่ในอำเภอเมือง จังหวัดน่าน")
 
-    # อัปโหลดไฟล์ PDF
-    uploaded_file = st.file_uploader("อัปโหลดไฟล์ PDF", type=["pdf"])
+    # กำหนด path ของไฟล์ PDF
+    pdf_path = "pdf/คาเฟ่ในอำเภอเมืองจังหวัดน่าน.pdf"
 
-    if uploaded_file is not None:
+    if os.path.exists(pdf_path):
         # อ่านข้อความจากไฟล์ PDF
-        documents = prepare_documents_from_pdf(uploaded_file)
+        documents = prepare_documents_from_pdf(pdf_path)
 
         # เพิ่มข้อมูลลง Qdrant
         add_documents_to_qdrant(documents)
@@ -101,6 +101,8 @@ def main():
                 st.write("Bot:", answer)
             else:
                 st.warning("กรุณาพิมพ์คำถามก่อนส่ง")
+    else:
+        st.error(f"ไม่พบไฟล์ PDF ที่ path: {pdf_path}")
 
 # 9. เรียกใช้แอปพลิเคชัน
 if __name__ == "__main__":
