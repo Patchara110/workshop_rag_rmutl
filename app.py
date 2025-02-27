@@ -45,12 +45,17 @@ def add_documents_to_qdrant(documents):
 def search_documents(query):
     embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
     query_vector = embedding_model.encode([query])[0].tolist()
-    
+
     search_results = qdrant_client.search(
         collection_name="cafe_documents",
         query_vector=query_vector,
         limit=2
     )
+    
+    # Debug: ดูผลลัพธ์การค้นหา
+    if search_results:
+        for hit in search_results:
+            print(hit.payload["text"])
     
     return [hit.payload["text"] for hit in search_results if "text" in hit.payload]
 
