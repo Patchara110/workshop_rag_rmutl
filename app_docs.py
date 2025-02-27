@@ -20,11 +20,7 @@ qdrant_client.recreate_collection(
 )
 
 # 3. ข้อมูลเอกสารที่กำหนดเอง
-def get_additional_documents():
-    # Return a list of additional documents
-    additional_documents = [
-   {
-          "cafes": [
+documents = [
             {
               "name": "Comla Bakery & Baking Studio",
               "address": "59/4 ถนนท่าลี่, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
