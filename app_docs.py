@@ -287,8 +287,7 @@ documents = [
             "location": { "lat": 18.8077428, "lng": 100.771273 }
           }
       ]
-    }
-]
+
 return additional_documents
 
 # 4. แปลงข้อความเป็นเวกเตอร์ และเพิ่มลงใน Qdrant
@@ -334,15 +333,12 @@ def generate_answer(query):
 
 # 7. สร้างอินเทอร์เฟซด้วย Streamlit
 def main():
-    st.title("RAG Chatbot เกี่ยวกับคาเฟ่ในอำเภอเมืองจังหวัดน่าน")
+    st.title("RAG Chatbot คาเฟ่ในอำเภอเมือง จังหวัดน่าน")
     st.write("สวัสดี Chatbot ที่ช่วยตอบคำถามจากเอกสารที่มีอยู่")
 
-    # ดึงข้อมูลเอกสาร
-    documents = prepare_documents()
-
-    # เพิ่มข้อมูลลง Qdrant
+    # เพิ่มข้อมูลเอกสารลงใน Qdrant
     add_documents_to_qdrant(documents)
-    st.success("เอกสารถูกประมวลผลและพร้อมใช้งานแล้ว!")
+    st.success("ข้อมูลเอกสารพร้อมใช้งานแล้ว!")
 
     # รับคำถามจากผู้ใช้
     query = st.text_input("คุณ: ", placeholder="พิมพ์คำถามของคุณที่นี่...")
@@ -356,5 +352,5 @@ def main():
             st.warning("กรุณาพิมพ์คำถามก่อนส่ง")
 
 # 8. เรียกใช้แอปพลิเคชัน
-  if __name__ == "__main__":
-     main()
+if __name__ == "__main__":
+    main()
