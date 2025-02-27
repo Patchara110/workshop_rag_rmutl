@@ -6,7 +6,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct, VectorParams, Distance
 from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
-from pypdf import PdfReader
+from pypdf2 import PdfReader
 
 # 1. โหลด environment variables จากไฟล์ .env
 load_dotenv()
