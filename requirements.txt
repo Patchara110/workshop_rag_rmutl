@@ -1,7 +1,6 @@
-streamlit 
-groq 
-qdrant-client 
+streamlit
+PyPDF2
 sentence-transformers
-langchain 
+qdrant-client
+groq
 python-dotenv
-pypdf 
