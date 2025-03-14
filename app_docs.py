@@ -1,4 +1,3 @@
-# app.py
 import os
 import streamlit as st
 from groq import Groq
@@ -6,6 +5,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct, VectorParams, Distance
 from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
+import tiktoken  # ใช้สำหรับนับ Token
 
 # 1. โหลด environment variables จากไฟล์ .env
 load_dotenv()
@@ -731,7 +731,7 @@ documents = [
     Google Maps: https://url.in.th/JqjOP   
     คำอธิบาย: Lyn Cafe’ คาเฟ่สไตล์โมเดิร์นในน่านที่มีบรรยากาศอบอุ่น เสิร์ฟกาแฟคุณภาพและขนมหวานรสเด็ด.    
     Facebook: https://www.facebook.com/PondTickLyn2020
-
+    
     """
 ]
 # 4. แปลงข้อความเป็นเวกเตอร์ และเพิ่มลงใน Qdrant
@@ -743,42 +743,57 @@ def add_documents_to_qdrant(documents):
     points = [PointStruct(id=i, vector=vectors[i], payload={"text": documents[i]}) for i in range(len(documents))]
     qdrant_client.upsert(collection_name="documents", points=points)
 
-# 5. สร้างฟังก์ชันการค้นหาเอกสาร
-def search_documents(query):
-    embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
-    query_vector = embedding_model.encode([query])[0].tolist()
-    search_results = qdrant_client.search(
-        collection_name="documents",
-        query_vector=query_vector,
-        limit=2  # ดึงเอกสารที่เกี่ยวข้อง 2 อันดับแรก
-    )
-    return [hit.payload["text"] for hit in search_results]
+def chunk_text(text_list, max_tokens):
+    chunks = []
+    current_chunk = []
+    current_token_count = 0
 
-# 6. สร้างฟังก์ชันการสร้างคำตอบด้วย Groq
+    for text in text_list:
+        token_count = len(tokenizer.encode(text))  # นับจำนวน Token ในข้อความนี้
+
+        # ถ้าเพิ่มข้อความนี้แล้ว Token เกินกำหนด ให้เริ่ม Chunk ใหม่
+        if current_token_count + token_count > max_tokens:
+            chunks.append("\n".join(current_chunk))
+            current_chunk = [text]
+            current_token_count = token_count
+        else:
+            current_chunk.append(text)
+            current_token_count += token_count
+
+    # เพิ่ม Chunk สุดท้าย
+    if current_chunk:
+        chunks.append("\n".join(current_chunk))
+
+    return chunks
+
 def generate_answer(query):
-    # ค้นหาข้อมูลที่เกี่ยวข้องจาก Qdrant
     retrieved_docs = search_documents(query)
 
-    # รวมข้อมูลเข้าไปใน Prompt
-    context = "\n".join(retrieved_docs)
-    prompt = [
-        {"role": "system", "content": "คุณเป็นผู้ช่วยที่เชี่ยวชาญเกี่ยวกับข้อมูลในเอกสาร จงตอบคำถามอย่างกระชับและถูกต้อง"},
-        {"role": "user", "content": f"ข้อมูลอ้างอิง:\n{context}\n\nคำถาม: {query}\n\nคำตอบ:"}
-    ]
+    # แบ่งข้อมูลออกเป็น Chunk ตามขนาด Token ที่รองรับ
+    text_chunks = chunk_text(retrieved_docs, MAX_TOKENS_PER_REQUEST)
 
-    # เรียก Groq API
+    responses = []
     groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-    response = groq_client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=prompt
-    )
 
-    return response.choices[0].message.content
+    for chunk in text_chunks:
+        prompt = [
+            {"role": "system", "content": "คุณเป็นผู้ช่วย AI ที่เชี่ยวชาญด้านข้อมูลจากเอกสาร"},
+            {"role": "user", "content": f"ข้อมูลอ้างอิง:\n{chunk}\n\nคำถาม: {query}\n\nคำตอบ:"}
+        ]
+
+        response = groq_client.chat.completions.create(
+            model="mixtral-8x7b-32768",
+            messages=prompt
+        )
+
+        responses.append(response.choices[0].message.content)
+
+    return "\n\n".join(responses)  # รวมคำตอบทั้งหมดเข้าด้วยกัน
 
 # 7. สร้างอินเทอร์เฟซด้วย Streamlit
 def main():
     st.title("RAG Chatbot สำหรับข้อมูลคาเฟ่ยอดฮิตใน จังหวัดน่าน")
-    st.write("สวัสดี! ฉันคือ Chatbot คาเฟ่คาเฟ่ยอดฮิตใน จังหวัดน่าน")
+    st.write("สวัสดี! ฉันคือ Chatbot ที่ช่วยตอบคำถามเกี่ยวกับคาเฟ่ยอดฮิตใน จังหวัดน่าน")
 
     # เพิ่มข้อมูลเอกสารลงใน Qdrant
     add_documents_to_qdrant(documents)
