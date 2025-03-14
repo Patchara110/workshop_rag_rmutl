@@ -8,6 +8,7 @@ from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 
+
 # 1. โหลด environment variables จากไฟล์ .env
 load_dotenv()
 

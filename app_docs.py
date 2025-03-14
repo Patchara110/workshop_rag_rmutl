@@ -19,277 +19,721 @@ qdrant_client.recreate_collection(
     vectors_config=VectorParams(size=384, distance=Distance.COSINE)  # ใช้ 384-D embedding
 )
 
-# 3. ข้อมูลเอกสารที่กำหนดเอง
 documents = [
-            {
-              "name": "Comla Bakery & Baking Studio",
-              "address": "59/4 ถนนท่าลี่, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-              "phone": "086-925-2626",
-              "hours": "ทุกวัน เวลา 08:00 - 18:00 น.",
-              "google_maps": "https://www.google.co.th/maps/place/Comla+Bakery/@18.7920485,100.7809916,17z/data=!3m1!4b1!4m14!1m7!3m6!1s0x31278da8c56c7129:0x9addc1127831f954!2sComla+Bakery!8m2!3d18.7920485!4d100.7835665!16s%2Fg%2F11fvl7gl1t!3m5!1s0x31278da8c56c7129:0x9addc1127831f954!8m2!3d18.7920485!4d100.7835665!16s%2Fg%2F11fvl7gl1t?hl=th&entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoJLDEwMjExNDUzSAFQAw%3D%3D",
-              "description": "คาเฟ่ที่มีขนมอบและเค้กหลากหลาย บรรยากาศสบาย ๆ เหมาะสำหรับคนรักการขนมอบ",
-              "facebook": "https://www.facebook.com/comlabakery",
-              "location": { "lat": 18.7920485, "lng": 100.7809916 }
-            },
-            {
-              "name": "LYKKE Brunch & Wine Bar",
-              "address": "160/1 ถนนท่าลี่, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-              "phone": "085-697-5935",
-              "hours": "ทุกวัน เวลา 09:00 - 22:00 น.",
-              "google_maps": "https://www.google.co.th/maps/place/LYKKE+Brunch+%26+Wine+bar/@18.7763039,100.7588063,17z/data=!3m1!4b1!4m6!3m5!1s0x31278f0b9500292d:0x8ac29f400c4b8896!8m2!3d18.7763039!4d100.7588063!16s%2Fg%2F11vhgg1qb3?hl=th&entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoJLDEwMjExNDUzSAFQAw%3D%3D",
-              "description": "คาเฟ่และไวน์บาร์ ที่มีเมนูบรันช์ อาหารเช้า และเครื่องดื่มหลากหลาย",
-              "facebook": "https://www.facebook.com/lykkebar",
-              "location": { "lat": 18.7763039, "lng": 100.7588063 }
-            },
-            {
-              "name": "Workboxes Café",
-              "address": "123/7 ถนนน่าน, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-              "phone": "099-141-2323",
-              "hours": "ทุกวัน เวลา 08:00 - 18:00 น.",
-              "google_maps": "https://www.google.co.th/maps/place/Workboxes+Cafe'/@18.7883069,100.7756068,17z/data=!3m1!4b1!4m6!3m5!1s0x31278de7c1a3818d:0x12f7e866787be166!8m2!3d18.7883069!4d100.7781817!16s%2Fg%2F11bwkwhgb2?hl=th&entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoJLDEwMjExNDUzSAFQAw%3D%3D",
-              "description": "คาเฟ่ที่มีมุมทำงานสบาย ๆ มีทั้งกาแฟและขนมหวานให้เลือก",
-              "facebook": "https://www.facebook.com/workboxes",
-              "location": { "lat": 18.7883069, "lng": 100.7756068 }
-            },
-            {
-              "name": "Me & Mum Café",
-              "address": "123 ถนนศรีนคร, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-              "phone": "081-625-5353",
-              "hours": "ทุกวัน เวลา 08:30 - 17:30 น.",
-              "google_maps": "https://www.google.co.th/maps/place/Me+%26+Mum+Caf%C3%A9/@18.8037213,100.7594953,17z/data=!3m1!4b1!4m6!3m5!1s0x31278df4f96ed36f:0xf1b49658f632d34d!8m2!3d18.8037213!4d100.7620702!16s%2Fg%2F11l11cdqlr?hl=th&entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoJLDEwMjExNDUzSAFQAw%3D%3D",
-              "description": "คาเฟ่ขนาดเล็กแต่มีบรรยากาศอบอุ่นและเมนูหลากหลายที่เหมาะกับทุกวัย",
-              "facebook": "https://www.facebook.com/meandmum",
-              "location": { "lat": 18.8037213, "lng": 100.7594953 }
-            },
-            {
-              "name": "Mix Academic Café",
-              "address": "7/2 ถนนหาดใหญ่, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-              "phone": "091-234-5678",
-              "hours": "ทุกวัน เวลา 09:00 - 19:00 น.",
-              "google_maps": "https://www.google.co.th/maps/place/Mix+Academic+Caf%C3%A9/@18.7897171,100.7800158,17z/data=!3m1!4b1!4m6!3m5!1s0x31278de673a42315:0xd7e3dc01a13ac3bc!8m2!3d18.7897171!4d100.7825907!16s%2Fg%2F11bxfvswgy?hl=th&entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoJLDEwMjExNDUzSAFQAw%3D%3D",
-              "description": "คาเฟ่สไตล์การเรียนรู้ ที่มีทั้งหนังสือและเมนูเครื่องดื่มเย็นและร้อน",
-              "facebook": "https://www.facebook.com/mixacademic",
-              "location": { "lat": 18.7897171, "lng": 100.7800158 }
-            },
-           {
-            "name": "Sober Coffee House",
-            "address": "316/4-5 ถนนมหายศ, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-            "phone": "064-496-9199",
-            "hours": "ทุกวัน เวลา 08:00 - 17:00 น.",
-            "google_maps": "https://www.google.co.th/maps/place/Sober+coffee+house/@18.7788547,100.7712697,17z/data=!3m1!4b1!4m6!3m5!1s0x31278f1cdc82d913:0xbb2ccdd61929aef0!8m2!3d18.7788547!4d100.7738446!16s%2Fg%2F11vyzglpld?hl=th&entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoJLDEwMjExNDUzSAFQAw%3D%3D",
-            "description": "คาเฟ่สไตล์มินิมอลที่มีเมนูเครื่องดื่มหลากหลายและเค้กมะพร้าวที่ได้รับความนิยม",
-            "facebook": "https://www.facebook.com/sobercoffeehouse",
-            "location": {
-              "lat": 18.7788547,
-              "lng": 100.7712697
-            }
-          },
-          {
-            "name": "Mata Old Town Coffee Nan",
-            "address": "45 ถนนสุริยพงษ์, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-            "phone": "089-876-5432",
-            "hours": "ทุกวัน เวลา 09:00 - 18:00 น.",
-            "google_maps": "https://www.google.co.th/maps/place/%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B8%84%E0%B8%B1%E0%B8%A7%E0%B8%81%E0%B8%B2%E0%B9%81%E0%B8%9F+%E0%B8%A1%E0%B8%B2%E0%B8%95%E0%B8%B2+%E0%B9%82%E0%B8%AD%E0%B8%A5%E0%B8%94%E0%B9%8C+%E0%B8%97%E0%B8%B2%E0%B8%A7%E0%B8%99%E0%B8%8D/@18.7822259,100.7774193,17z/data=!3m1!4b1!4m6!3m5!1s0x31278d001cfd9b73:0x2594b524388a3312!8m2!3d18.7822259!4d100.7799942!16s%2Fg%2F11y62726lx?hl=th&entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoJLDEwMjExNDUzSAFQAw%3D%3D",
-            "description": "คาเฟ่ที่ให้บรรยากาศย้อนยุคสไตล์เมืองเก่าน่าน พร้อมกาแฟคุณภาพดี",
-            "facebook": "https://www.facebook.com/mataoldtowncoffee",
-            "location": {
-              "lat": 18.7822259,
-              "lng": 100.7774193
-            }
-          },
-          {
-            "name": "Voila Nirvanan (โว้วล่า เนอร์วาน่าน)",
-            "address": "82/2 ถนนมหายศ, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-            "phone": "098-765-4321",
-            "hours": "ทุกวัน เวลา 07:30 - 17:00 น.",
-            "google_maps": "https://www.google.com/maps/place/%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B8%84%E0%B8%B1%E0%B8%A7%E0%B8%81%E0%B8%B2%E0%B9%81%E0%B8%9F+%E0%B8%A1%E0%B8%B2%E0%B8%95%E0%B8%B2+%E0%B9%82%E0%B8%AD%E0%B8%A5%E0%B8%94%E0%B9%8C+%E0%B8%97%E0%B8%B2%E0%B8%A7%E0%B8%99%E0%B8%8D/@18.782231,100.7774193,17z/data=!3m1!4b1!4m6!3m5!1s0x31278d001cfd9b73:0x2594b524388a3312!8m2!3d18.7822259!4d100.7799942!16s%2Fg%2F11y62726lx?entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoASAFQAw%3D%3D",
-            "description": "คาเฟ่บรรยากาศอบอุ่น ตกแต่งสไตล์ญี่ปุ่น มีเครื่องดื่มและเบเกอรี่น่าลอง",
-            "facebook": "https://www.facebook.com/voilanirvanan",
-            "location": {
-              "lat": 18.782231,
-              "lng": 100.7774193
-            }
-          },
-          {
-            "name": "Curve Cafe Nan",
-            "address": "99 ถนนน่าน-ท่าวังผา, ตำบลผาสิงห์, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-            "phone": "092-345-6789",
-            "hours": "ทุกวัน เวลา 08:00 - 18:00 น.",
-            "google_maps": "https://www.google.com/maps/place/CURVE+Coffee+and+Bar/@18.7768559,100.7759484,3a,75y,182.38h,90t/data=!3m7!1e1!3m5!1silD_s_VBGOxuWyq7UNtCew!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D0%26panoid%3DilD_s_VBGOxuWyq7UNtCew%26yaw%3D182.38327!7i16384!8i8192!4m14!1m7!3m6!1s0x31278f4dd513d639:0xc4c5a3d48442d219!2sCURVE+Coffee+and+Bar!8m2!3d18.7767296!4d100.7759501!16s%2Fg%2F11vc2gbvmn!3m5!1s0x31278f4dd513d639:0xc4c5a3d48442d219!8m2!3d18.7767296!4d100.7759501!16s%2Fg%2F11vc2gbvmn?entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoASAFQAw%3D%3D",
-            "description": "คาเฟ่บรรยากาศโมเดิร์น พร้อมกาแฟคุณภาพและวิวธรรมชาติ",
-            "facebook": "https://www.facebook.com/curvecafenan",
-            "location": {
-              "lat": 18.7768559,
-              "lng": 100.7759484
-            }
-          },
-          {
-            "name": "น.น่าน คาเฟ่",
-            "address": "ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-            "phone": "093-456-7890",
-            "hours": "ทุกวัน เวลา 08:00 - 17:00 น.",
-            "google_maps": "https://www.google.co.th/maps/place/%E0%B8%99.%E0%B8%99%E0%B9%88%E0%B8%B2%E0%B8%99+%E0%B8%84%E0%B8%B2%E0%B9%80%E0%B8%9F%E0%B9%88/@18.7892887,100.7841151,17z/data=!3m1!4b1!4m6!3m5!1s0x31278e7679e33df5:0x2efa548613c1025a!8m2!3d18.7892887!4d100.78669!16s%2Fg%2F11bxgmx_p1?hl=th&entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoJLDEwMjExNDUzSAFQAw%3D%3D",
-            "description": "คาเฟ่บรรยากาศสงบ เหมาะสำหรับการพักผ่อนและชิลล์กับเครื่องดื่มและขนม",
-            "facebook": "https://www.facebook.com/nan.cafe",
-            "location": {
-              "lat": 18.7892887,
-              "lng": 100.7841151
-            }
-          },
-           {
-            "name": "Inlamai Coffee",
-            "address": "150 ถนนท่าลี่, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-            "phone": "098-123-4567",
-            "hours": "ทุกวัน เวลา 08:00 - 18:00 น.",
-            "google_maps": "https://www.google.com/maps/place/inlamai+coffee/@18.7828238,100.7695158,17z/data=!4m15!1m8!3m7!1s0x30dddf3e4f732c13:0x2a65a6f734774880!2sinlamai+coffee!8m2!3d18.7828238!4d100.7720907!10e1!16s%2Fg%2F11sgp1pjlm!3m5!1s0x30dddf3e4f732c13:0x2a65a6f734774880!8m2!3d18.7828238!4d100.7720907!16s%2Fg%2F11sgp1pjlm?entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoASAFQAw%3D%3D",
-            "description": "คาเฟ่ที่มีการเสิร์ฟกาแฟคุณภาพดีและบรรยากาศสบาย ๆ เหมาะสำหรับการนั่งทำงานหรือพบปะเพื่อนฝูง",
-            "facebook": "https://www.facebook.com/inlamaicoffee",
-            "location": { "lat": 18.7828238, "lng": 100.7695158 }
-          },
-          {
-            "name": "Coffee Room Nan",
-            "address": "78 ถนนพหลโยธิน, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-            "phone": "095-678-1234",
-            "hours": "ทุกวัน เวลา 09:00 - 18:00 น.",
-            "google_maps": "https://www.google.co.th/maps/place/Coffee+Room+Nan/@18.7698788,100.7628357,17z/data=!3m1!4b1!4m6!3m5!1s0x31278fef76f93dd5:0x272e7626267c791e!8m2!3d18.7698788!4d100.7654106!16s%2Fg%2F11sv2z4k1g?hl=th&entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoJLDEwMjExNDUzSAFQAw%3D%3D",
-            "description": "คาเฟ่ที่มีเมนูกาแฟและขนมอบหลายชนิด พร้อมบรรยากาศที่เงียบสงบ",
-            "facebook": "https://www.facebook.com/coffeeroomnan",
-            "location": { "lat": 18.7698788, "lng": 100.7628357 }
-          },
-          {
-            "name": "THE CORE COFFEEBAR",
-            "address": "45 ถนนหาดใหญ่, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-            "phone": "091-234-5678",
-            "hours": "ทุกวัน เวลา 08:00 - 19:00 น.",
-            "google_maps": "https://www.google.co.th/maps/place/THE+CORE+COFFEEBAR/@18.7801302,100.7751906,17z/data=!3m1!4b1!4m6!3m5!1s0x31278d7b2ca9b4a5:0x6b6f0c8652df8bb2!8m2!3d18.7801302!4d100.7777655!16s%2Fg%2F11rg7s37yv?hl=th&entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoJLDEwMjExNDUzSAFQAw%3D%3D",
-            "description": "คาเฟ่ที่เน้นกาแฟและเครื่องดื่มที่มีรสชาติกลมกล่อม พร้อมมุมพักผ่อนที่สะดวกสบาย",
-            "facebook": "https://www.facebook.com/thecorecoffeebar",
-            "location": { "lat": 18.7801302, "lng": 100.7751906 }
-          },
-          {
-            "name": "ลืมเวลา คาเฟ่ (Luem Wela Cafe)",
-            "address": "25/2 ถนนมหายศ, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-            "phone": "092-345-6789",
-            "hours": "ทุกวัน เวลา 09:00 - 18:00 น.",
-            "google_maps": "https://www.google.co.th/maps/place/%E0%B8%A5%E0%B8%B7%E0%B8%A1%E0%B9%80%E0%B8%A7%E0%B8%A5%E0%B8%B2+%E0%B8%84%E0%B8%B2%E0%B8%9F%E0%B9%88+(Luem+Wela+Cafe)/@18.8121285,100.7599702,17z/data=!3m1!4b1!4m6!3m5!1s0x31278d5b80c8c947:0xbb8f8185c9b314af!8m2!3d18.8121285!4d100.7625451!16s%2Fg%2F11tf3nf7cq?hl=th&entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoJLDEwMjExNDUzSAFQAw%3D%3D",
-            "description": "คาเฟ่บรรยากาศเหมาะสำหรับการหลีกหนีความวุ่นวาย มีเมนูกาแฟหลากหลาย",
-            "facebook": "https://www.facebook.com/luemwelacafe",
-            "location": { "lat": 18.8121285, "lng": 100.7599702 }
-          },
-          {
-            "name": "SommePaul Cafe",
-            "address": "101/5 ถนนท่าลี่, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-            "phone": "089-456-7890",
-            "hours": "ทุกวัน เวลา 08:00 - 17:00 น.",
-            "google_maps": "https://www.google.co.th/maps/place/SommePaul+cafe/@18.773907,100.7645429,17z/data=!3m1!4b1!4m6!3m5!1s0x31278f7cef3b8c6d:0x1c90dc9f76180d6d!8m2!3d18.773907!4d100.7671178!16s%2Fg%2F11kj1gktg7?hl=th&entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoJLDEwMjExNDUzSAFQAw%3D%3D",
-            "description": "คาเฟ่ที่มีเมนูอาหารและเครื่องดื่มหลากหลาย พร้อมบรรยากาศที่น่านั่ง",
-            "facebook": "https://www.facebook.com/sommePaulcafe",
-            "location": { "lat": 18.773907, "lng": 100.7645429 }
-          },
-          {
-            "name": "Southern Coffee",
-            "address": "35 ถนนท่าใหม่, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-            "phone": "097-654-3210",
-            "hours": "ทุกวัน เวลา 09:00 - 18:00 น.",
-            "google_maps": "https://www.google.co.th/maps/place/Southern+coffee/@18.7779595,100.755453,17z/data=!3m1!4b1!4m6!3m5!1s0x31278f274c8a3aad:0xaf79d2f8254f5e23!8m2!3d18.7779595!4d100.7580279!16s%2Fg%2F11fvl51p9m?hl=th&entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoJLDEwMjExNDUzSAFQAw%3D%3D",
-            "description": "คาเฟ่ที่เสิร์ฟกาแฟรสชาติเยี่ยม พร้อมเมนูขนมเบเกอรี่หลากหลาย",
-            "facebook": "https://www.facebook.com/southerncoffee",
-            "location": { "lat": 18.7779595, "lng": 100.755453 }
-          },
-          {
-            "name": "DRIP IN HOME Cafe’ Nan",
-            "address": "72/3 ถนนสุริยพงษ์, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-            "phone": "095-567-1234",
-            "hours": "ทุกวัน เวลา 08:30 - 18:00 น.",
-            "google_maps": "https://www.google.co.th/maps/place/DRIP+IN+HOME+Cafe%E2%80%99+Nan/@18.7385059,100.7527157,17z/data=!3m1!4b1!4m6!3m5!1s0x31278fdf785d4053:0x755807533c224aaa!8m2!3d18.7385059!4d100.7552906!16s%2Fg%2F11svl70xk5?hl=th&entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoJLDEwMjExNDUzSAFQAw%3D%3D",
-            "description": "คาเฟ่ที่มีทั้งกาแฟดริปและเมนูเครื่องดื่มสุดพิเศษ พร้อมบรรยากาศผ่อนคลาย",
-            "facebook": "https://www.facebook.com/dripinhomecafe",
-            "location": { "lat": 18.7385059, "lng": 100.7527157 }
-          },
-          {
-            "name": "Namwan Cafe",
-            "address": "16 ถนนหาดใหญ่, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-            "phone": "089-567-4321",
-            "hours": "ทุกวัน เวลา 09:00 - 17:00 น.",
-            "google_maps": "https://www.google.co.th/maps/place/Namwan+Cafe/@18.7749375,100.7593626,17z/data=!3m1!4b1!4m6!3m5!1s0x31278fe921ef5d95:0x58ec99877371941c!8m2!3d18.7749375!4d100.7619375!16s%2Fg%2F11t8b3s_px?hl=th&entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoJLDEwMjExNDUzSAFQAw%3D%3D",
-            "description": "คาเฟ่ที่เน้นเครื่องดื่มเย็นและขนมท้องถิ่น พร้อมบรรยากาศอบอุ่น",
-            "facebook": "https://www.facebook.com/namwancafe",
-            "location": { "lat": 18.7749375, "lng": 100.7593626 }
-          },
-          {
-            "name": "la Mure Cafe ละเมอ คาเฟ่",
-            "address": "89 ถนนท่าใหม่, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-            "phone": "094-567-8901",
-            "hours": "ทุกวัน เวลา 08:00 - 18:00 น.",
-            "google_maps": "https://www.google.com/maps/place/la+Mure+cafe+%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%A1%E0%B8%AD+%E0%B8%84%E0%B8%B2%E0%B9%80%E0%B8%9F%E0%B9%88/@18.8443711,100.7764111,17z/data=!3m2!4b1!5s0x30dddf6e5c431441:0xa81e7027284c1a5a!8m2!3d18.8443711!4d100.7764111",
-            "description": "ร้านกาแฟที่เน้นกาแฟดริปและขนมหวานท้องถิ่น พร้อมบรรยากาศน่ารัก",
-            "facebook": "https://www.facebook.com/lamurecafe",
-            "location": { "lat": 18.8443711, "lng": 100.7764111 }
-          },
-           {
-            "name": "น่านวนา NANVANA",
-            "address": "10/1 ถนนมหายศ, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-            "phone": "083-456-1234",
-            "hours": "ทุกวัน เวลา 08:00 - 17:00 น.",
-            "google_maps": "https://www.google.com/maps/place/%E0%B8%99%E0%B9%88%E0%B8%B2%E0%B8%99%E0%B8%A7%E0%B8%99%E0%B8%B2+NANVANA/@18.7745895,100.748723,17z/data=!3m1!4b1!4m6!3m5!1s0x31278ffd843a5241:0xdbd6869c2bfebb46!8m2!3d18.7745844!4d100.7512979!16s%2Fg%2F11rqtxplxy?entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoASAFQAw%3D%3D",
-            "description": "คาเฟ่ที่มีบรรยากาศสบาย ๆ และเครื่องดื่มรสชาติพิเศษ",
-            "facebook": "https://www.facebook.com/nanvana",
-            "location": { "lat": 18.7745895, "lng": 100.748723 }
-          },
-          {
-            "name": "ลิลินน์ คาเฟ่",
-            "address": "112/3 ถนนสุริยพงษ์, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-            "phone": "086-123-4567",
-            "hours": "ทุกวัน เวลา 09:00 - 18:00 น.",
-            "google_maps": "https://www.google.com/maps/search/%E0%B8%A5%E0%B8%B4%E0%B8%A5%E0%B8%B4%E0%B8%99%E0%B8%99%E0%B9%8C+%E0%B8%84%E0%B8%B2%E0%B9%80%E0%B8%9F%E0%B9%88/@18.7715764,100.5126426,10z/data=!3m1!4b1?entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoASAFQAw%3D%3D",
-            "description": "คาเฟ่ที่มีมุมผ่อนคลายและกาแฟสด",
-            "facebook": "https://www.facebook.com/lilinndcafe",
-            "location": { "lat": 18.7715764, "lng": 100.5126426 }
-          },
-          {
-            "name": "Blur Cafe Coffee & Cozy Space",
-            "address": "143 ถนนท่าลี่, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-            "phone": "091-234-6789",
-            "hours": "ทุกวัน เวลา 08:00 - 18:00 น.",
-            "google_maps": "https://www.google.com/maps/place/Blur+cafe+coffee%26Cozyspace/@18.7749212,100.7590936,17z/data=!3m1!4b1!4m6!3m5!1s0x31278f65c92cb627:0xcde191296a686754!8m2!3d18.7749161!4d100.7616685!16s%2Fg%2F11q4j4cvp1?entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoASAFQAw%3D%3D",
-            "description": "คาเฟ่ที่มีมุมพักผ่อนและกาแฟรสเข้ม",
-            "facebook": "https://www.facebook.com/blurcozyspace",
-            "location": { "lat": 18.7749212, "lng": 100.7590936 }
-          },
-          {
-            "name": "บ้านนาก๋างโต้ง Baan Na Kang Tong Cafe & Homestay",
-            "address": "27/1 ถนนน่าน-ท่าวังผา, ตำบลผาสิงห์, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-            "phone": "085-123-6789",
-            "hours": "ทุกวัน เวลา 09:00 - 18:00 น.",
-            "google_maps": "https://www.google.com/maps/place/%E0%B8%9A%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%99%E0%B8%B2%E0%B8%81%E0%B9%8B%E0%B8%B2%E0%B8%87%E0%B9%82%E0%B8%95%E0%B9%89%E0%B8%87+Baan+Na+Kang+Tong+Cafe+%26+Homestay/@18.8136957,100.729945,17z/data=!4m9!3m8!1s0x31278da231058d37:0xe0d77fc6544860ba!5m2!4m1!1i2!8m2!3d18.8136906!4d100.7325199!16s%2Fg%2F11knnlfqs_?entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoASAFQAw%3D%3D",
-            "description": "คาเฟ่และโฮมสเตย์ที่มีบรรยากาศธรรมชาติ พร้อมเมนูเครื่องดื่มและอาหาร",
-            "facebook": "https://www.facebook.com/baankangtongcafe",
-            "location": { "lat": 18.8136957, "lng": 100.729945 }
-          },
-          {
-            "name": "เอราบิก้า คอฟฟี น่าน",
-            "address": "60 ถนนมหายศ, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-            "phone": "064-123-4567",
-            "hours": "ทุกวัน เวลา 08:00 - 17:00 น.",
-            "google_maps": "https://www.google.com/maps/place/%E0%B9%80%E0%B8%AD%E0%B8%A3%E0%B8%B2%E0%B8%9A%E0%B8%B4%E0%B8%81%E0%B9%89%E0%B8%B2+%E0%B8%84%E0%B8%AD%E0%B8%9F%E0%B8%9F%E0%B8%B5+%E0%B8%99%E0%B9%88%E0%B8%B2%E0%B8%99/@18.787195,100.7816768,17z/data=!3m1!4b1!4m6!3m5!1s0x31278de43bef1f19:0x710d375d31197b82!8m2!3d18.7871899!4d100.7842517!16s%2Fg%2F11b6gm1335?entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoASAFQAw%3D%3D",
-            "description": "คาเฟ่ที่มีเมนูกาแฟสดและขนมเค้กสูตรพิเศษ",
-            "facebook": "https://www.facebook.com/arabicacoffee",
-            "location": { "lat": 18.787195, "lng": 100.7816768 }
-          },
-          {
-            "name": "All Era Cafe’",
-            "address": "123 ถนนสุริยพงษ์, ตำบลในเวียง, อำเภอเมืองน่าน, จังหวัดน่าน 55000",
-            "phone": "089-765-4321",
-            "hours": "ทุกวัน เวลา 08:00 - 18:00 น.",
-            "google_maps": "https://www.google.com/maps/place/All+Era+Cafe%E2%80%99/@18.8077428,100.771273,17z/data=!3m1!4b1!4m6!3m5!1s0x31278d3285ea03a9:0xe49dcc5f530fec4b!8m2!3d18.8077377!4d100.7738479!16s%2Fg%2F11trtkcg3b?entry=ttu&g_ep=EgoyMDI1MDIyMy4xIKXMDSoASAFQAw%3D%3D",
-            "description": "คาเฟ่ที่มีทั้งเครื่องดื่มและขนม พร้อมบรรยากาศสะดวกสบาย",
-            "facebook": "https://www.facebook.com/alleracafe",
-            "location": { "lat": 18.8077428, "lng": 100.771273 }
-          }
-      ]
+    """
+    ---  
+    ชื่อร้าน: LYKKE Brunch & Wine Bar  
+    อำเภอ: เมืองน่าน  
+    ที่อยู่: 160/1 ถนนท่าลี่ ตำบลในเวียง อำเภอเมืองน่าน จังหวัดน่าน 55000  
+    เวลาเปิดทำการ: ทุกวัน เวลา 09:00 - 22:00 น.  
+    หมายเลขโทรศัพท์: 085-697-5935  
+    Google Maps: https://url.in.th/hEZVX  
+    คำอธิบาย: คาเฟ่และไวน์บาร์ ที่มีเมนูบรันช์ อาหารเช้า และเครื่องดื่มหลากหลาย  
+    Facebook: https://www.facebook.com/lykke1991  
 
-return additional_documents
+    ---  
+    ชื่อร้าน: Brooklyn Coffee & Jazz Bar  
+    อำเภอ: เมืองน่าน  
+    ที่อยู่: 123 ถนนศรีนคร ตำบลในเวียง อำเภอเมืองน่าน จังหวัดน่าน 55000  
+    เวลาเปิดทำการ: ทุกวัน 07:00 น. ถึง 17:00 น.  
+    หมายเลขโทรศัพท์: 092-665-1635  
+    Google Maps: https://url.in.th/ByBFw  
+    คำอธิบาย: คาเฟ่ขนาดเล็กแต่มีบรรยากาศอบอุ่นและเมนูหลากหลายที่เหมาะกับทุกวัย  
+    Facebook: https://www.facebook.com/Brooklyncoffeeandjazzbar  
 
+    ---  
+    ชื่อร้าน: Sober Coffee House  
+    อำเภอ: เมืองน่าน  
+    ที่อยู่: 316/4-5 ถนนมหายศ ตำบลในเวียง อำเภอเมืองน่าน จังหวัดน่าน 55000  
+    เวลาเปิดทำการ: ทุกวัน เวลา 08:00 - 17:00 น.  
+    หมายเลขโทรศัพท์: 064-496-9199  
+    Google Maps: https://url.in.th/tDEVf  
+    คำอธิบาย: คาเฟ่สไตล์มินิมอลที่มีเมนูเครื่องดื่มหลากหลายและเค้กมะพร้าวที่ได้รับความนิยม  
+    Facebook: https://www.facebook.com/profile.php?id=100040079636114  
+
+    ---  
+    ชื่อร้าน: Mata Old Town Coffee Nan  
+    อำเภอ: เมืองน่าน  
+    ที่อยู่: 45 ถนนสุริยพงษ์ ตำบลในเวียง อำเภอเมืองน่าน จังหวัดน่าน 55000  
+    เวลาเปิดทำการ: ทุกวัน เวลา 09:00 - 18:00 น.  
+    หมายเลขโทรศัพท์: 089-876-5432  
+    Google Maps: https://url.in.th/oLwLH  
+    คำอธิบาย: คาเฟ่ที่ให้บรรยากาศย้อนยุคสไตล์เมืองเก่าน่าน พร้อมกาแฟคุณภาพดี  
+    Facebook: https://www.facebook.com/profile.php?id=61561323317601  
+
+    ---  
+    ชื่อร้าน: Inlamai Coffee  
+    อำเภอ: เมืองน่าน  
+    ที่อยู่: 150 ถนนท่าลี่ ตำบลในเวียง อำเภอเมืองน่าน จังหวัดน่าน 55000  
+    เวลาเปิดทำการ: ทุกวัน เวลา 08:00 - 18:00 น.  
+    หมายเลขโทรศัพท์: 098-123-4567  
+    Google Maps: https://url.in.th/GvTte  
+    คำอธิบาย: คาเฟ่ที่มีการเสิร์ฟกาแฟคุณภาพดีและบรรยากาศสบาย ๆ เหมาะสำหรับการนั่งทำงานหรือพบปะเพื่อนฝูง  
+    Facebook: https://www.facebook.com/inlamai.coffee/  
+
+    ---  
+    ชื่อร้าน: Enlil Café  
+    อำเภอ: ภูเพียง  
+    ที่อยู่: Enlil ตำบลเมืองจัง อำเภอภูเพียง จังหวัดน่าน 55000
+    เวลาเปิดทำการ: วันเสาร์-อาทิตย์และในวันหยุดพิเศษ เวลา 07:00 - 17:00 น.  
+    หมายเลขโทรศัพท์: 0969962452  
+    Google Maps: https://url.in.th/pbrIv  
+    คำอธิบาย: บรรยากาศร่มรื่น ท่ามกลางดอกงิ้วสีสดใส เหมาะสำหรับพักผ่อนและถ่ายรูปสวย ๆ  
+    Facebook: https://www.facebook.com/enlil.2022/  
+
+    ---  
+    ชื่อร้าน: Cafe' Soodgongdee  
+    อำเภอ: ภูเพียง  
+    ที่อยู่: ถนนโยธาธิการ น่าน 2035 ตำบลฝายแก้ว อำเภอภูเพียง น่าน 55000  
+    เวลาเปิดทำการ: หยุดทุกวันอังคาร เวลา 09:00 - 23:00 น.  
+    หมายเลขโทรศัพท์: 0869956545  
+    Google Maps: https://url.in.th/FwbPQ  
+    คำอธิบาย: ร้านกาแฟบรรยากาศดีดี ริมแม่น้ำน่าน  
+    Facebook: https://www.facebook.com/CafeSoodgongdee/  
+
+    ---  
+    ชื่อร้าน: Hani.Creativespace  
+    อำเภอ: ภูเพียง  
+    ที่อยู่: 228 หมู่ 9 บ้านบุบผาราม, ตำบล ฝายแก้ว อำเภอ ภูเพียง น่าน 55000  
+    เวลาเปิดทำการ: หยุดทุกวันพุธ เวลา 09:00 - 17:00 น.  
+    หมายเลขโทรศัพท์: 0894205445  
+    Google Maps: https://url.in.th/MMVvb  
+    คำอธิบาย: คาเฟ่เล็กๆน่ารัก ในสวนสุดชิลล์สไตล์ญี่ปุ่น ที่มีความร่มรื่น ณ ใจกลางจังหวัดน่าน  
+    Facebook: https://url.in.th/amtza  
+
+    ---  
+    ชื่อร้าน: LUNA SPACE (Coffee x Tea)  
+    อำเภอ: ภูเพียง  
+    ที่อยู่: 128 หมู่บ้านแสงดาว ตำบล ฝายแก้ว อำเภอ ภูเพียง จังหวัด น่าน 55000  
+    เวลาเปิดทำการ: ทุกวัน 08:30 - 17:30 น.  
+    หมายเลขโทรศัพท์: 0624340012  
+    Google Maps: https://url.in.th/sprGT  
+    คำอธิบาย: ร้านกาแฟเล็กๆ เสิร์ฟชา กาแฟหอมนุ่ม และเมล็ดกาแฟคั่วพิเศษของทางร้าน  
+    Facebook: https://www.facebook.com/LUNA.SPACE.Coffee/  
+
+    ---  
+    ชื่อร้าน: กลิ่นนาน่าน  
+    อำเภอ: ภูเพียง  
+    ที่อยู่: 258 หมุ่ 17 ตำบล ฝายแก้ว อำเภอ ภูเพียง น่าน 55000  
+    เวลาเปิดทำการ: ทุกวัน 08:00 - 22:00 น. 
+    หมายเลขโทรศัพท์: 0988321039  
+    Google Maps: https://url.in.th/vFJMs  
+    คำอธิบาย:  คาเฟ่พื้นที่สีเขียวที่ตั้งอยู่ระหว่างทางไปวัดพระธาตุแช่แห้ง ภายในร้านตกแต่งสวยงาม มีหลายโซนให้เลือกนั่ง มีพื้นที่และเครื่องเล่นสำหรับเด็ก รวมถึงพื้นที่ให้อาหารสัตว์ เช่น กระต่ายและปลาคราฟ  
+    Facebook: https://www.facebook.com/klinnanan?locale=th_TH
+
+    ---  
+    ชื่อร้าน: เดอะวิว @ กิ่วม่วง  
+    อำเภอ: สันติสุข  
+    ที่อยู่: 124 บ้านกิ่วม่วง หมู่ที่ 6 ตำบลดู่พงษ์ อำเภอสันติสุข จังหวัดน่าน  
+    เวลาเปิดทำการ:  จันทร์-พุธ 08:30-18:30 น. เสาร์-อาทิตย์ 08:30-20:00 น. 
+    หมายเลขโทรศัพท์: -  
+    Google Maps: https://url.in.th/JHGYL  
+    คำอธิบาย: ร้านกาแฟที่ตั้งอยู่บนดอยกิ่วม่วง เสิร์ฟกาแฟหอมกรุ่นพร้อมวิวภูเขาและทะเลหมอกที่สวยงาม เหมาะสำหรับพักผ่อนและชมธรรมชาติ  
+    Facebook: https://url.in.th/SMewU  
+
+    ---  
+    ชื่อร้าน: ม่อนกิ่วม่วง  
+    อำเภอ: สันติสุข  
+    ที่อยู่: 132 ม.6 ถ.น่าน-สันติสุข ตำบลดู่พงษ์ อำเภอสันติสุข จังหวัดน่าน  
+    เวลาเปิดทำการ: ทุกวัน เวลา 07:30 - 23:00 น.  
+    หมายเลขโทรศัพท์: 0894298842  
+    Google Maps: https://url.in.th/lNNbW  
+    คำอธิบาย: คาเฟ่สไตล์มินิมอล ตกแต่งด้วยเฟอร์นิเจอร์ไม้ บรรยากาศอบอุ่น มีทั้งโซนห้องแอร์และโซนด้านนอกสำหรับรับลมธรรมชาติ  
+    Facebook: https://www.facebook.com/monkewmuang/  
+
+    ---  
+    ชื่อร้าน: คำปู้จู้ คาเฟ่ (Kam Pu Joo Cafe)  
+    อำเภอ: สันติสุข  
+    ที่อยู่: บ้านน่านมั่นคง ตำบลป่าแลวหลวง อำเภอสันติสุข จังหวัดน่าน  
+    เวลาเปิดทำการ: ทุกวัน เวลา 09:00 - 18:00 น.  
+    หมายเลขโทรศัพท์: 0846153519  
+    Google Maps: https://url.in.th/waSUR  
+    คำอธิบาย: คาเฟ่ที่มีอาหาร เครื่องดื่ม ไอศกรีม และขนมครบครัน ตั้งอยู่บนดอยกิ่วม่วง  
+    Facebook: https://www.facebook.com/kampujoo.cafe/ 
+
+    ---  
+    ชื่อร้าน: สุดขอบฟ้า คาเฟ่ (Sudkobfah Cafe)  
+    อำเภอ: สันติสุข  
+    ที่อยู่: ตำบล ดู่พงษ์ อำเภอ สันติสุข น่าน 55210  
+    เวลาเปิดทำการ: ทุกวัน เวลา 09:00 - 18:00 น.  
+    หมายเลขโทรศัพท์: 0982175701  
+    Google Maps: https://url.in.th/NGfcx  
+    คำอธิบาย: คาเฟ่ลับ ๆ ที่มีวิวดอยภูคา ตั้งอยู่ทางผ่านไปถนนเลข 3  
+    Facebook: https://url.in.th/HwLfa  
+
+    ---  
+    ชื่อร้าน: Coffee By คุ้มเวียงพิงค์  
+    อำเภอ: สันติสุข  
+    ที่อยู่: หมู่ที่ 6 125 ตำบล ดู่พงษ์ อำเภอ สันติสุข น่าน 55210  
+    เวลาเปิดทำการ: ทุกวัน เวลา 07:00 - 17:00 น.  
+    หมายเลขโทรศัพท์: 0896688676  
+    Google Maps: https://url.in.th/HFUTg  
+    คำอธิบาย: ร้านกาแฟ/ชาที่มีบรรยากาศสบาย ๆ เสิร์ฟกาแฟและเครื่องดื่มหลากหลาย เหมาะสำหรับการพักผ่อน  
+    Facebook: https://url.in.th/ilbFY  
+
+    ---  
+    ชื่อร้าน: หลงเขา บ่อเกลือ น่าน (Lhong Khao)  
+    อำเภอ: บ่อเกลือ  
+    ที่อยู่: 80 บ้านห้วยโป่ง ต.บ่อเกลือใต้, Bo Klua, Thailand, Nan  
+    เวลาเปิดทำการ: ทุกวัน เวลา 07:30 - 17:30 น.  
+    หมายเลขโทรศัพท์: 0927711645  
+    Google Maps: https://url.in.th/Ptasz  
+    คำอธิบาย: บรรยากาศของร้านจะเป็นกระท่อมไม้แบบโอเพ่นแอร์ที่ตั้งอยู่กลางป่า ติดลำธาร พื้นที่กว้างขวาง มีโต๊ะให้เลือกนั่งหลากหลายแบบ  
+    Facebook: https://www.facebook.com/Lhongkhaoboklua/?locale=th_TH  
+
+    ---  
+    ชื่อร้าน: Egao Cafe’ เอะ กา โอะ คาเฟ่ บ่อเกลือ น่าน  
+    อำเภอ: บ่อเกลือ  
+    ที่อยู่: เอะ กา โอะ คาเฟ่ ต. บ่อเกลือใต้ อ. บ่อเกลือ จ.น่าน  
+    เวลาเปิดทำการ: ทุกวัน เวลา 08:00 - 17:00 น.  
+    หมายเลขโทรศัพท์: 0639386622  
+    Google Maps: https://goo.gl/maps/2wpZwgCk4UeztaG9A  
+    คำอธิบาย: คาเฟ่สุดคิวท์ ฟีลญี่ปุ่น บรรยากาศดูอบอุ่น ที่นั่งมีหลายโซนทั้งที่นั่งสไตล์แคมป์ด้านหน้าร้าน โซนที่นั่งด้านในตัวร้าน ที่นั่งโซนด้านข้างร้านวิวลำธาร และโซนชิงช้าวิวทุ่งนา  
+    Facebook: https://www.facebook.com/EGAOCAFEBOKLUEA  
+
+    ---  
+    ชื่อร้าน: Slowbarcoffee at เว-นิสบ้านเวร  
+    อำเภอ: บ่อเกลือ  
+    ที่อยู่: Slow Bar Coffee at เว-นิส บ้านเวร ถ. 1081 บ่อเกลือ-เฉลิมพระเกียร์ติ ต.บ่อเกลือเหนือ อ.บ่อเกลือ จ. น่าน  
+    เวลาเปิดทำการ: ทุกวัน เวลา 09:00 - 18:00 น.  
+    หมายเลขโทรศัพท์: 0825197455  
+    Google Maps: https://goo.gl/maps/Lyygg725vFyEfWJEA  
+    คำอธิบาย: ร้านกาแฟสุดชิล วิวนาขั้นบันได ร้านกาแฟจะอยู่ริมเขา เราสามารถมองเห็นวิวนาขั้นบันไดบ้านเวร นาขั้นบันไดชื่อดังของบ่อเกลือได้แบบ 180 องศา  
+    Facebook: https://www.facebook.com/Slowbarcoffeeatvenicebanwen  
+
+    ---  
+    ชื่อร้าน: SLOW BAR COffee ณ.สะปัน  
+    อำเภอ: บ่อเกลือ  
+    ที่อยู่: Unnamed Road ตำบล ดงพญา อำเภอ บ่อเกลือ น่าน 55220  
+    เวลาเปิดทำการ: ทุกวัน เวลา 06:00 - 20:00 น.  
+    หมายเลขโทรศัพท์: 0930097134  
+    Google Maps: https://goo.gl/maps/HWagscRYmhwPMSSG8  
+    คำอธิบาย: ร้านกาแฟและบาร์ลับ ห้ามพลาดของหมู่บ้านสะปัน เป็นร้านกาแฟ Slow bar เล็กๆ เน้นเสิร์ฟเมนูเครื่องดื่มกาแฟมีทั้งดริปร้อน ดริปเย็น มีเมล็ดกาแฟให้เลือกชิมเยอะ  
+    Facebook: https://www.facebook.com/slowbarc/?locale=th_TH  
+
+    ---  
+    ชื่อร้าน: หยุดเวลา คาเฟ่  
+    อำเภอ: บ่อเกลือ  
+    ที่อยู่: 50 บ้านสะปัน ต.ดงพญา อ.บ่อเกลือ จ.น่าน, Bo Klua, Thailand, Nan  
+    เวลาเปิดทำการ: ทุกวัน เวลา 06:30 - 17:30 น.  
+    หมายเลขโทรศัพท์: 0955322532  
+    Google Maps: https://url.in.th/UTvzt  
+    คำอธิบาย: เป็นคาเฟ่ที่รายล้อมด้วยภูเขาและมีทุ่งนายุเบื้องล่าง ช่วงนี้ทุ่งนากำลังออกรวงสีทองเหลืองอร่าม ตัดกับสีเขียวของทิวเขาสวย  
+    Facebook: https://www.facebook.com/yudwelacafe/?locale=th_TH  
+
+    ---  
+    ชื่อร้าน: 1148 cafe’ coffee&food  
+    อำเภอ: สองแคว  
+    ที่อยู่: ตำบล ยอด อำเภอ สองแคว น่าน 55160  
+    เวลาเปิดทำการ: ทุกวัน เวลา 09:00 - 18:00 น.  
+    หมายเลขโทรศัพท์: 0833253121  
+    Google Maps: https://url.in.th/Qqejk  
+    คำอธิบาย: คาเฟ่ที่ตั้งอยู่ในพื้นที่นาไร่หลวง มีบรรยากาศเงียบสงบ เหมาะสำหรับการพักผ่อนและจิบกาแฟท่ามกลางธรรมชาติ  
+    Facebook: https://www.facebook.com/PUY1148?locale=th_TH  
+
+    ---  
+    ชื่อร้าน: หางทุ่งคาเฟ่  
+    อำเภอ: สองแคว  
+    ที่อยู่: 147 ตำบล นาไร่หลวง อำเภอ สองแคว น่าน 55160  
+    เวลาเปิดทำการ: ทุกวัน เวลา 09:00 - 17:00 น.  
+    หมายเลขโทรศัพท์: 0871838394  
+    Google Maps: https://url.in.th/AmhPA  
+    คำอธิบาย: คาเฟ่ที่มีเมนูเครื่องดื่มหลากหลาย ตั้งอยู่ในพื้นที่นาไร่หลวง  
+    Facebook: https://www.facebook.com/hangtungcafe/about/?id=61568089784105&sk=about#  
+
+    ---  
+    ชื่อร้าน: น่านริเวอร์คาเฟ่  
+    อำเภอ: สองแคว  
+    ที่อยู่: 145 หมู่ 3 ถ.ท่าวังผา-เชียงคำ ต.นาไร่หลวง อ.สองแคว จ.น่าน 55160 
+    เวลาเปิดทำการ: ทุกวัน เวลา 08:30 - 17:00 น.  
+    หมายเลขโทรศัพท์: 0922685708  
+    Google Maps: https://url.in.th/KWnsa  
+    คำอธิบาย: คาเฟ่ที่บรรยากาศดี วิวสวยๆ มีที่พักและอาหาร  
+    Facebook: https://url.in.th/GpFPN  
+    
+    ---  
+    ชื่อร้าน:Kirin by We Coffee
+    อำเภอ:สองแคว
+    ที่อยู่:9P53+HM8 1148 ตำบล นาไร่หลวง อำเภอ สองแคว น่าน 55160
+    เวลาเปิดทำการ:ทุกวัน เวลา 9:00-17:00 น.
+    หมายเลขโทรศัพท์:095 625 6323
+    Google Maps:https://url.in.th/ZKjdR
+    คำอธิบาย:คาเฟ่มินิมอลกลางขุนเขา เสิร์ฟกาแฟคุณภาพ พร้อมวิวธรรมชาติสุดชิล เหมาะสำหรับพักผ่อนและเช็กอิน
+    Facefook:https://www.facebook.com/wecoffee1148
+
+    ---  
+    ชื่อร้าน:ม่านฝน
+    อำเภอ:สองแคว
+    ที่อยู่:ยอด อำเภอ สองแคว น่าน 55160
+    เวลาเปิดทำการ:หยุดทุกวันจันทร์ เวลา 7:00-17:00 น.
+    หมายเลขโทรศัพท์:082 943 6256
+    Google Maps:https://url.in.th/HAOyK
+    คำอธิบาย:คาเฟ่กลางขุนเขา ท่ามกลางสายหมอกและอากาศเย็นสบาย เสิร์ฟกาแฟหอม ขนมอร่อย พร้อมวิวธรรมชาติสุดชิล
+    Facefook:https://www.facebook.com/pages/ม่านฝน/101585615142729/
+     
+    ---  
+    ชื่อร้าน: ภูแววิว Phuwae View Coffee&Home Stay  
+    อำเภอ: เฉลิมพระเกียรติ  
+    ที่อยู่: บ้านเปียงซ้อ ตำบลขุนน่าน อำเภอ เฉลิมพระเกียรติ น่าน 55130  
+    เวลาเปิดทำการ: ทุกวัน เวลา 08:00 - 18:00 น.  
+    หมายเลขโทรศัพท์: 0629241525  
+    Google Maps: https://maps.app.goo.gl/P7YET4Yu8Wqm1AEWA  
+    คำอธิบาย: ดื่มด่ำกับวิวภูเขาสุดปัง สัมผัสสายหมอกในยามเช้า ภูแววิว ร้านกาแฟและที่พักแห่งบ้านเปียงซ้อ  
+    Facebook: https://www.facebook.com/phuwaeview/  
+
+    ---  
+    ชื่อร้าน: ลานลมคาเฟ่&ห้วยโก๋นโฮมสเตย์  
+    อำเภอ: เฉลิมพระเกียรติ  
+    ที่อยู่: ตำบล ห้วยโก๋น อำเภอ เฉลิมพระเกียรติ น่าน 55130  
+    เวลาเปิดทำการ: ทุกวัน เวลา 09:00 - 21:00 น.  
+    หมายเลขโทรศัพท์: 0861897213  
+    Google Maps: https://url.in.th/ldecj  
+    คำอธิบาย: สัมผัสวิว และบรรยากาศหลักล้าน  
+    Facebook: https://www.facebook.com/groups/1013875542688311/user/100094082543469/  
+
+    ---  
+    ชื่อร้าน: กาแฟเจี๊ยงลั๊วะสะเกี๊ยง 
+    อำเภอ: เฉลิมพระเกียรติ  
+    ที่อยู่: 131 หมู่8 ตำบล ขุนน่าน อำเภอ เฉลิมพระเกียรติ น่าน 55130 
+    เวลาเปิดทำการ: ทุกวัน เวลา 06:30 - 17:30 น.  
+    หมายเลขโทรศัพท์: 0929311318
+    Google Maps: https://url.in.th/jAeYj
+    คำอธิบาย: กาแฟชั้นดี เครื่องดื่มรสชาติดี ร้านขายของที่ระลึกในท้องถิ่นชั้นเลิศ
+    Facebook: https://www.facebook.com/groups/1013875542688311/user/100094082543469/
+
+    ---  
+    ชื่อร้าน: Lalana Cafe Nan 
+    อำเภอ: ท่าวังผา
+    ที่อยู่:  87 ตำบล ตาลชุม อำเภอ ท่าวังผา น่าน 55140
+    เวลาเปิดทำการ: เวลา 09:00 - 17:30 น. หยุดทุกวันอังคาร  
+    หมายเลขโทรศัพท์: 0902892262
+    Google Maps: https://url.in.th/OgtYb
+    คำอธิบาย: คาเฟ่บรรยากาศสบายๆ เสิร์ฟกาแฟอร่อย พร้อมขนมหวานและเครื่องดื่มเย็นในบรรยากาศบ้านสวน
+    Facebook: https://www.facebook.com/profile.php?id=100084371410398
+    ---  
+    ชื่อร้าน: บ้านศิลป์อาร์ทแกลเลอรี่ & คาเฟ่
+    อำเภอ: ท่าวังผา
+    ที่อยู่:  135 หมู่ 2 ท่าวังผา อำเภอ ท่าวังผา น่าน 55140
+    เวลาเปิดทำการ: เวลา 08:00 - 17:00 น. หยุดทุกวันอังคาร  
+    หมายเลขโทรศัพท์: 0844804800
+    Google Maps: https://url.in.th/NuBRf
+    คำอธิบาย: คาเฟ่ที่เต็มไปด้วยงานศิลป์ท้องถิ่น พร้อมกาแฟสูตรพิเศษและเค้กโฮมเมดในบรรยากาศที่แปลกใหม่
+    Facebook: https://www.facebook.com/baansilpacafenan
+
+    ---  
+    ชื่อร้าน: Batter cafe'
+    อำเภอ: ท่าวังผา
+    ที่อยู่:  237 ตำบล ยม อำเภอ ท่าวังผา น่าน 55140
+    เวลาเปิดทำการ: เสาร์-อาทิตย์ เวลา 10:00 - 17:00 น.  
+    หมายเลขโทรศัพท์: 0923895176
+    Google Maps: https://url.in.th/PtCNW
+    คำอธิบาย: คาเฟ่ที่มีกาแฟคุณภาพและขนมเบเกอรี่สูตรพิเศษเหมาะสำหรับทุกคนที่รักในรสชาติและบรรยากาศอบอุ่น
+    Facebook: https://www.facebook.com/battercafe
+
+    ---  
+    ชื่อร้าน: CALM COFFEE SPACE
+    อำเภอ: ท่าวังผา
+    ที่อยู่:  559 M6, อำเภอ ท่าวังผา น่าน 55140
+    เวลาเปิดทำการ: เวลา 10:00 - 17:00 น. หยุดทุกวันพฤหัสบดี
+    หมายเลขโทรศัพท์: 0818511746
+    Google Maps: https://url.in.th/GXPUZ
+    คำอธิบาย: สถานที่พักผ่อนสำหรับคนรักกาแฟ พร้อมบรรยากาศที่สงบและเงียบสงัด เหมาะสำหรับการนั่งชิลหรือทำงาน
+    Facebook: https://www.facebook.com/profile.php?id=100035021606954
+
+    ---  
+    ชื่อร้าน: ณ ฟ้า การ์เด้นท์ | NA FAH GARDEN
+    อำเภอ: ท่าวังผา
+    ที่อยู่:  134 บ้านปงหนึ่ง ตำบล ตาลชุม อำเภอ ท่าวังผา น่าน 55140
+    เวลาเปิดทำการ: ทุกวัน เวลา 09:00 - 18:00 น. 
+    หมายเลขโทรศัพท์: 0822122477
+    Google Maps: https://url.in.th/hAxHF
+    คำอธิบาย: คาเฟ่กลางสวนที่ให้บรรยากาศสดชื่นกับกาแฟหอมกรุ่นและเครื่องดื่มร้อนในช่วงเช้า
+    Facebook: https://www.facebook.com/NAFAHGARDEN
+    
+    ---  
+    ชื่อร้าน: แก้วตาคาเฟ่(Kaewta Cafe)
+    อำเภอ: นาน้อย 
+    ที่อยู่: Kaewta Cafe ตำบล บัวใหญ่ อำเภอนาน้อย น่าน 55150
+    เวลาเปิดทำการ: ทุกวัน เวลา 09:00 - 20:00 น.  
+    หมายเลขโทรศัพท์: 0864421582 
+    Google Maps:https://url.in.th/JPJtq
+    คำอธิบาย: เป็นคาเฟ่ที่มีบรรยากาศดี เหมาะสำหรับการพักผ่อน
+    Facebook: https://www.facebook.com/profile.php?id=100083041223276
+
+    ---  
+    ชื่อร้าน: เฮือนคำแก้วรีสอร์ท& KK House cafa nan  
+    อำเภอ: นาน้อย 
+    ที่อยู่: 1026, ตำบล นาน้อย อำเภอนาน้อย น่าน 55150
+    เวลาเปิดทำการ: ทุกวัน เวลา 08:00 - 18:00 น.  
+    หมายเลขโทรศัพท์: 091-792-3969 
+    Google Maps:https://url.in.th/mTKMn
+    คำอธิบาย: เป็นคาเฟ่ที่มีบรรยากาศดี เหมาะสำหรับการพักผ่อน
+    Facebook: https://www.facebook.com/p/เฮือนคำแก้วรีสอร์ท-KK-House-cafa-nan-100085658915514
+
+    ---  
+    ชื่อร้าน: สาวน้อยบ้านนา กาแฟสด 
+    อำเภอ: นาน้อย 
+    ที่อยู่: Highway 1026 ตำบล สถาน อำเภอนาน้อย น่าน 55150 ไทย
+    เวลาเปิดทำการ: ทุกวัน เวลา 07.00-17.00น.
+    หมายเลขโทรศัพท์: 099 214 2194
+    Google https://url.in.th/RVYeW
+    คำอธิบาย: บรรยากาศของร้านเป็นกันเอง เหมาะสำหรับผู้ที่ต้องการพักผ่อนและลิ้มลองกาแฟสดในบรรยากาศสบายๆ
+    Facebook: https://www.facebook.com/CHORFAFA/
+
+    ---  
+    ชื่อร้าน: นาน้อย คอฟฟี่ - Nanoi Coffee 
+    อำเภอ: นาน้อย 
+    ที่อยู่: 8PJ8+9W ตำบล ศรีษะเกษ อำเภอนาน้อย น่าน 55150 ไทย
+    เวลาเปิดทำการ: ทุกวัน เวลา 08:00 - 18:00 น
+    หมายเลขโทรศัพท์: 062 547 1444
+    Google https:https://url.in.th/eWgJS
+    คำอธิบาย: ร้านกาแฟบรรยากาศอบอุ่น บริการกาแฟสดและเครื่องดื่มหลากหลาย เหมาะสำหรับการพักผ่อน
+    Facebook: https://www.facebook.com/profile.php?id=61557401606241
+
+    ---  
+    ชื่อร้าน: Cafe Cher's | คาเฟ่ เฌอ 
+    อำเภอ: นาน้อย 
+    ที่อยู่: 144 Buayai sub-district อำเภอนาน้อย น่าน 55150 ไทย
+    เวลาเปิดทำการ: ทุกวัน เวลา 9:00–17:00 น.หยุดทุกวันจันทร์
+    หมายเลขโทรศัพท์: 065 953 6242
+    Google https://url.in.th/muAIE
+    คำอธิบาย: บรรยากาศอบอุ่น บริการกาแฟสดและเครื่องดื่มหลากหลาย เหมาะสำหรับการพักผ่อน
+    Facebook: https://www.facebook.com/CafeChers144/?locale=th_TH
+
+    ---  
+    ชื่อร้าน: RONGBOMPUA Cafe โรงบ่มปัว คาเฟ่
+    อำเภอ: ปัว
+    ที่อยู่: 130 ตำบล ปัว อำเภอ ปัว น่าน 55120
+    เวลาเปิดทำการ: ทุกวัน เวลา 09:00 - 16:30 น. 
+    หมายเลขโทรศัพท์: 0871874160
+    Google Maps: https://url.in.th/lOQFv
+    คำอธิบาย: เป็นสถานที่ ที่เป็นเอกลักษณ์ โดยเฉพาะกับการรีโนเวทจากโรงบ่มยาสูบเก่าแก่ ที่ทำให้สัมผัสถึงสถาปัตยกรรมอิฐแดงและการตกแต่งที่เป็นเอกลักษณ์อย่างลงตัว
+    Facebook: https://www.facebook.com/PX107PUANAN
+
+    ---  
+    ชื่อร้าน: Tari Cafe 
+    อำเภอ: ปัว
+    ที่อยู่: 225 สถาน ตำบล สถาน อำเภอ ปัว น่าน 55120
+    เวลาเปิดทำการ: ทุกวัน เวลา 09:00 - 17:00 น. 
+    หมายเลขโทรศัพท์: 0953299749
+    Google Maps: https://url.in.th/vAsxG
+    คำอธิบาย: คาเฟ่ที่มีสไตล์ทันสมัย มีมุมถ่ายรูปที่แปลกใหม่และสวยงาม
+    Facebook: https://www.facebook.com/profile.php?id=61554378965998
+
+    ---  
+    ชื่อร้าน: Sakad Coffee
+    อำเภอ: ปัว
+    ที่อยู่: 139 ตำบล สกาด อำเภอ ปัว น่าน 55120
+    เวลาเปิดทำการ: ทุกวัน เวลา 08:00 - 17:00 น. 
+    หมายเลขโทรศัพท์: 0930149555
+    Google Maps: https://url.in.th/MQgAh
+    คำอธิบาย: คาเฟ่บรรยากาศอบอุ่น ตกแต่งในสไตล์วินเทจ โดดเด่นด้วยของสะสมยุคเก่าและการ์ตูนสมัยก่อน
+    Facebook: https://www.facebook.com/profile.php?id=100063806477502
+
+    ---  
+    ชื่อร้าน: คันนา คาเฟ่ ปัว(Kannah cafe)
+    อำเภอ: ปัว
+    ที่อยู่: สถาน 224 หมู่ 11 อำเภอ ปัว น่าน 55120
+    เวลาเปิดทำการ: ทุกวัน เวลา 11:00 - 21:00 น. 
+    หมายเลขโทรศัพท์: 054718744
+    Google Maps: https://url.in.th/RqkwY
+    คำอธิบาย: เป็นคาเฟ่ที่ตกแต่งแนวโฮมมี่ ทำให้คุณได้สัมผัสกับธรรมชาติที่สวยงาม
+    Facebook: https://www.facebook.com/KannahCafePua
+
+    ---  
+    ชื่อร้าน: โกโก้วัลเลย์ คาเฟ่
+    อำเภอ: ปัว
+    ที่อยู่: 340 ตำบล ปัว อำเภอ ปัว น่าน 55120
+    เวลาเปิดทำการ: ทุกวัน เวลา 08:00 - 18:00 น. 
+    หมายเลขโทรศัพท์: 0863330099
+    Google Maps: https://url.in.th/zrxns
+    คำอธิบาย: เป็นคาเฟ่ที่ตกแต่งแนวโฮมมี่ ทำให้คุณได้สัมผัสกับธรรมชาติที่สวยงาม
+    Facebook: https://www.facebook.com/cocoavalleyresort
+
+    ---  
+    ชื่อร้าน: la.ong coffee 
+    อำเภอ: บ้านหลวง 
+    ที่อยู่: VC2W+9HJ ตำบล สวด อำเภอ บ้านหลวง น่าน 55190
+    เวลาเปิดทำการ: ทุกวัน เวลา 08:00–17:00 น. (หยุดทุกวันจันทร์) 
+    หมายเลขโทรศัพท์: 0610862067
+    Google Maps:https://url.in.th/nBzWI
+    คำอธิบาย: เป็นคาเฟ่ที่มีบรรยากาศดี เหมาะสำหรับการพักผ่อน
+    Facebook: https://www.facebook.com/profile.php?id=61567265887175
+
+    ---  
+    ชื่อร้าน: บ้านไม้ tea & coffee (ซุ้มจิ๋ว)
+    อำเภอ: บ้านหลวง 
+    ที่อยู่: บ้านป่าต้าง เลขที่ 20 ซอย 5 ตำบล บ้านฟ้า อำเภอ บ้านหลวง น่าน 55190
+    เวลาเปิดทำการ: ทุกวัน เวลา 08:00–16:30 น.
+    หมายเลขโทรศัพท์: 0988935795
+    Google Maps:https://url.in.th/swlZH
+    คำอธิบาย: ร้านกาแฟเล็กๆ ในบ้านหลวง จังหวัดน่าน
+    Facebook: https://www.facebook.com/profile.php?id=61557361015095
+
+    ---  
+    ชื่อร้าน: บ้านเพลินจิต 
+    อำเภอ: บ้านหลวง 
+    ที่อยู่: 125 ตำบล สวด อำเภอ บ้านหลวง น่าน 55190
+    เวลาเปิดทำการ: ทุกวัน เวลา 09:00-20:00 น. 
+    หมายเลขโทรศัพท์: 083 789 4991
+    Google Maps:https://url.in.th/XWikj
+    คำอธิบาย: บ้านเพลินจิตคาเฟ่ สักลายมือเศรษฐี - เครื่องดื่ม ชา กาฟ
+    Facebook: https://www.facebook.com/baanplernjit/
+
+    ---  
+    ชื่อร้าน: นัดพบ coffee 
+    อำเภอ: บ้านหลวง 
+    ที่อยู่: VC2W+H7F ตำบล สวด อำเภอ บ้านหลวง น่าน 55190
+    เวลาเปิดทำการ: ทุกวัน เวลา 09:00–20:00 น. 
+    หมายเลขโทรศัพท์: 0956798520
+    Google https://url.in.th/XZsIy
+    คำอธิบาย: ร้านนัดพบ coffeeกาแฟสด อาหารเครื่องดื่ม
+    Facebook: https://www.facebook.com/nadphopcoffeenan/
+
+    ---  
+    ชื่อร้าน: เพื่อน coffee house 
+    อำเภอ: บ้านหลวง 
+    ที่อยู่: ตลาดสด ตำบล ป่าคาหลวง อำเภอ บ้านหลวง น่าน 55190
+    เวลาเปิดทำการ: ทุกวัน เวลา 07:30 - 17:00 น. ปิดทุกวันพุธ
+    หมายเลขโทรศัพท์: 064 5544 195
+    Google https://url.in.th/rcJOp
+    คำอธิบาย: ร้านนัดพบกาแฟสด และมีอาหารเครื่องดื่มหลากหลายให้บริการในบรรยากาศอบอุ่นและเหมาะสำหรับการพักผ่อน
+    Facebook: https://www.facebook.com/puancoffeehouse/?locale=th_TH
+
+
+    ---
+    ชื่อร้าน:ต้งหลวง คาเฟ่
+    อำเภอ:แม่จริม
+    ที่อยู่:ตำบล หมอเมือง อำเภอแม่จริม น่าน 55170
+    เวลาเปิดทำการ:หยุดทุกวันอังคาร เวลา 9:00-18:00 น.
+    หมายเลขโทรศัพท์:086 369 6896
+    Google Maps:https://url.in.th/UMlje
+    คำอธิบาย: คาเฟ่บรรยากาศดีในอำเภอแม่จริม เสิร์ฟกาแฟรสดีและเครื่องดื่มสดชื่น พร้อมวิวธรรมชาติสวยงาม เหมาะสำหรับการพักผ่อนและถ่ายรูป
+    Facefook:https://www.facebook.com/Tongloungofficial
+
+    ---
+    ชื่อร้าน:แจงแอนด์เจทัวร์คอฟฟี่ & ปันบาร์
+    อำเภอ:แม่จริม
+    ที่อยู่:27 หมู่4 หนองเเดง อำเภอแม่จริม น่าน 55170
+    เวลาเปิดทำการ:วันจันทร์-วันศุกร์  เวลา 9:00-00:00 น.,วันเสาร์ เวลา 10:00–0:00 น.,วันอาทิตย์ เวลา 11:00–0:00 น.
+    หมายเลขโทรศัพท์:061 664 6561
+    Google Maps:https://url.in.th/MzKbB
+    คำอธิบาย:คาเฟ่สุดชิลในแม่จริม เสิร์ฟกาแฟหอมกรุ่น เครื่องดื่มสดชื่น และบรรยากาศอบอุ่น เหมาะสำหรับการพักผ่อนและแวะเช็กอิน
+    Facefook:https://www.facebook.com/profile.php?id=100088314352175
+
+    ---
+    ชื่อร้าน:นาเด่นคาเฟ่&Naden Cafe
+    อำเภอ:แม่จริม
+    ที่อยู่:220 ตำบล หนองแดง อำเภอแม่จริม น่าน 55170
+    เวลาเปิดทำการ:ทุกวัน เวลา 9:00-22:00 น.
+    หมายเลขโทรศัพท์:094 006 0875
+    Google Maps:https://url.in.th/QMymr
+    คำอธิบาย:คาเฟ่กลางทุ่งนา บรรยากาศเงียบสงบ โอบล้อมด้วยธรรมชาติ เสิร์ฟกาแฟหอม เครื่องดื่มสดชื่น เหมาะสำหรับพักผ่อนและถ่ายรูปสวยๆ
+    Facefook:https://www.facebook.com/bookbook25370104?locale=km_KH
+
+    ---
+    ชื่อร้าน:โชคดีคัพ คอฟฟี่
+    อำเภอ:แม่จริม
+    ที่อยู่:P275+9GC ตำบล หนองแดง อำเภอแม่จริม น่าน 55170
+    เวลาเปิดทำการ:ทุกวัน เวลา 8:00-18:00 น.
+    หมายเลขโทรศัพท์:089 991 5169
+    Google Maps:https://url.in.th/qUhtq
+    คำอธิบาย: คาเฟ่บรรยากาศดีในแม่จริม เสิร์ฟกาแฟหอม เครื่องดื่มสดชื่น และขนมอร่อย พร้อมวิวธรรมชาติที่เงียบสงบ เหมาะสำหรับการพักผ่อนและถ่ายรูป
+    Facefook:https://url.in.th/MmXKO
+
+    ---
+    ชื่อร้าน:บ้านต้นไม้Cafe'
+    อำเภอ:แม่จริม
+    ที่อยู่: ตำบล หนองแดง อำเภอแม่จริม น่าน 55170
+    เวลาเปิดทำการ:ทุกวันจันทร์-วันศุกร์ เวลา 8:30-16:30 น.
+    หมายเลขโทรศัพท์:ไม่ระบุ
+    Google Maps:https://url.in.th/MGsZX
+    คำอธิบาย:คาเฟ่บรรยากาศร่มรื่นในธรรมชาติ เสิร์ฟกาแฟหอมและเครื่องดื่มสดชื่น ท่ามกลางต้นไม้ใหญ่ เหมาะสำหรับการพักผ่อนและสัมผัสความสงบของธรรมชาติ
+    Facefook:ไม่ระบุ
+
+    ---
+    ชื่อร้าน:ถุงทองคาเฟ่ - ThungThong Cafe
+    อำเภอ:เชียงกลาง
+    ที่อยู่:ถุงทองคาเฟ่ - ThungThong Cafe บ้านเจดีย์ ตำบล เชียงกลาง อำเภอ เชียงกลาง น่าน 55160
+    เวลาเปิดทำการ:ทุกวันเวลา 8:00-19:00 น.
+    หมายเลขโทรศัพท์:086 369 6896
+    Google Maps:https://url.in.th/qwlAm
+    คำอธิบาย: คาเฟ่บรรยากาศสบายๆ ในบ้านเจดีย์ เสิร์ฟกาแฟหอมและเครื่องดื่มหลากหลาย พร้อมวิวธรรมชาติสวยงาม เหมาะสำหรับการพักผ่อนและเพลิดเพลินกับบรรยากาศที่เงียบสงบ
+    Facefook:https://www.facebook.com/ThungThongCafe
+
+    ---
+    ชื่อร้าน:Daisy house coffee and craft
+    อำเภอ:เชียงกลาง
+    ที่อยู่:6 ตำบล เชียงกลาง อำเภอ เชียงกลาง น่าน 55160
+    เวลาเปิดทำการ:วันจันทร์-วันศุกร์ 8:00-17:00
+    หมายเลขโทรศัพท์:091 854 2979
+    Google Maps:https://url.in.th/yVYqF
+    คำอธิบาย:คาเฟ่สุดชิลในแม่จริม เสิร์ฟกาแฟหอมกรุ่น เครื่องดื่มสดชื่น และบรรยากาศอบอุ่น เหมาะสำหรับการพักผ่อนและแวะเช็กอิน
+    Facefook:https://www.facebook.com/profile.php?id=100077536181986
+
+    ---
+    ชื่อร้าน:30กุมภา คาเฟ่ by Frint_Stone
+    อำเภอ:เชียงกลาง
+    ที่อยู่: ถนน โยธาธิการ น่าน แยกทางหลวงหมายเลข 1080-บ้านคันนา ตำบล พญาแก้ว อำเภอ เชียงกลาง น่าน 55160
+    เวลาเปิดทำการ:ทุกวัน เวลา 8:00-19:00 น.
+    หมายเลขโทรศัพท์:094 006 0875
+    Google Maps:https://url.in.th/QMymr
+    คำอธิบาย:คาเฟ่กลางทุ่งนา บรรยากาศเงียบสงบ โอบล้อมด้วยธรรมชาติ เสิร์ฟกาแฟหอม เครื่องดื่มสดชื่น เหมาะสำหรับพักผ่อนและถ่ายรูปสวยๆ
+    Facefook:https://www.facebook.com/profile.php?id=100063716133161
+
+    ---
+    ชื่อร้าน:CHILLVIEW cafe & restaurant
+    อำเภอ:เชียงกลาง
+    ที่อยู่: 1080 ตำบล เชียงคาน อำเภอ เชียงกลาง น่าน 55160
+    เวลาเปิดทำการ:ทุกวัน เวลา 9:00-17:00 น.
+    หมายเลขโทรศัพท์:087 788 2670
+    Google https://url.in.th/EqoKO
+    คำอธิบาย: คาเฟ่และร้านอาหารบรรยากาศดีในอำเภอเชียงกลาง เสิร์ฟทั้งกาแฟหอมและอาหารอร่อย พร้อมวิวธรรมชาติที่สวยงามและสงบ เหมาะสำหรับการพักผ่อนและสัมผัสบรรยากาศสุดชิล
+    Facefook:https://www.facebook.com/profile.php?id=100068570283169
+ 
+    ---  
+    ชื่อร้าน: GRREEN DAY COFFEE AND TEA
+    อำเภอ: นาหมื่น 
+    ที่อยู่: ตำบล บ่อแก้ว อำเภอ นาหมื่น น่าน 55180
+    เวลาเปิดทำการ: ทุกวัน เวลา 08.30 - 18.30 น.  
+    หมายเลขโทรศัพท์: 0864498828 
+    Google Maps:  https://url.in.th/pRpUF
+    คำอธิบาย:  คาเฟ่บรรยากาศสบาย ๆ ท่ามกลางธรรมชาติของอำเภอนาหมื่น ให้บริการกาแฟสด ชา และเครื่องดื่มหลากหลาย 
+    Facebook: https://www.facebook.com/profile.php?id=100089283032711#
+
+    ---  
+    ชื่อร้าน: น่านใต้คาเฟ่ แอนด์ อีทเทอรี่
+    อำเภอ: นาหมื่น
+    ที่อยู่: 165 อำเภอ นาหมื่น น่าน 55180
+    เวลาเปิดทำการ: ทุกวัน เวลา 10:00 – 21:00 น.  
+    หมายเลขโทรศัพท์: 0853579934
+    Google Maps: https://url.in.th/eoKxz 
+    คำอธิบาย: คาเฟ่สไตล์บ้านไม้ บรรยากาศดี เหมาะสำหรับการนั่งพักผ่อนและชมวิวธรรมชาติ     
+    Facebook: https://www.facebook.com/nantaicafeandEatery
+
+    ---  
+    ชื่อร้าน: Lip​ Cafe`&Friends​
+    อำเภอ: นาหมื่น
+    ที่อยู่: ตำบล บ่อแก้ว อำเภอ นาหมื่น น่าน 55180
+    เวลาเปิดทำการ: ทุกวัน เวลา07:00–18:00 น.  
+    หมายเลขโทรศัพท์: 0808948221
+    Google Maps:  https://url.in.th/JeHKl
+    คำอธิบาย: คาเฟ่สไตล์มินิมอล มีเมนูเครื่องดื่มหลากหลาย รวมถึงกาแฟดริปและโคลด์บริว    
+    Facebook: https://www.facebook.com/Lipcafeandfriends 
+
+    ---  
+    ชื่อร้าน: 10000mile Biker's Cafe By Fairy
+    อำเภอ: นาหมื่น
+    ที่อยู่:  91 ม.4 ต.นาทะนุง อ.นาหมื่น จ.น่าน, Nan, Thailand, Nan 
+    เวลาเปิดทำการ: ทุกวัน เวลา 09:00 - 20:00 น.  
+    หมายเลขโทรศัพท์: 0954670266
+    Google Maps: https://url.in.th/agLAC   
+    คำอธิบาย: คาเฟ่ที่มีบริการอาหารหลากหลาย รวมถึงบุฟเฟ่ต์หมูกระทะ บรรยากาศธรรมชาติ   
+    Facebook: https://www.facebook.com/mile10000
+
+    ---  
+    ชื่อร้าน: หลงจุ๊คาเฟ่
+    อำเภอ: นาหมื่น
+    ที่อยู่: เลขที่ 100 บ้านทุ่งรวงทอง หมู่ที่ 12 ตำบลบ่อแก้ว อำเภอนาหมื่น จังหวัดน่าน , Na Noi, Thailand, Nan
+    เวลาเปิดทำการ: ทุกวัน เวลา 09:00 - 20:00 น.  
+    หมายเลขโทรศัพท์: 0864282908 
+    Google Maps: https://url.in.th/PJOvC   
+    คำอธิบาย: คาเฟ่ที่ตั้งอยู่ท่ามกลางทุ่งนา ให้บริการกาแฟสดและเป็นจุดแวะพักผ่อนสำหรับนักเดินทาง    
+    Facebook: https://www.facebook.com/profile.php?id=100077512295613&locale=th_TH
+    
+    ---  
+    ชื่อร้าน: เฮือนรับรอง cafe' & Zen garden
+    อำเภอ:  ทุ่งช้าง
+    ที่อยู่: เฮือนรับรอง cafe' & zen garden, Amphoe Thung Chang, Thailand, Nan
+    เวลาเปิดทำการ: ทุกวัน เวลา 08.30 - 18.00 น.  
+    หมายเลขโทรศัพท์: 0954565638
+    Google Maps: https://url.in.th/ylQEW  
+    คำอธิบาย: คาเฟ่ที่มีบรรยากาศสวนเซนญี่ปุ่น เหมาะสำหรับผู้ที่ต้องการพักผ่อนในบรรยากาศสงบและสวยงาม    
+    Facebook:  https://www.facebook.com/profile.php?id=100076005580595&locale=th_TH
+
+    ---  
+    ชื่อร้าน:  Coffee De Hmong Roaster
+    อำเภอ: ทุ่งช้าง
+    ที่อยู่: 265 ม.11 ต.งอบ อ.ทุ่งช้าง จ.น่าน, Nan, Thailand, Nan
+    เวลาเปิดทำการ: ทุกวัน เวลา 08:00 - 17:30 น.  
+    หมายเลขโทรศัพท์: 0635626696
+    Google Maps: https://url.in.th/XZDtQ  
+    คำอธิบาย: กาแฟปลูกใต้ร่มเงา แบบเกษตรอินทรีย์กาแฟรักษาป่า เพื่อคนอยู่คู่กับป่าอย่างยั่งยืน    
+    Facebook: https://www.facebook.com/coffeedehmong?locale=th_TH
+
+    ---  
+    ชื่อร้าน: ช.ช้างคาเฟ่
+    อำเภอ: ทุ่งช้าง
+    ที่อยู่: โรงเรียนชุมชนบ้าน ตำบล ทุ่งช้าง อำเภอ ทุ่งช้าง น่าน 55130
+    เวลาเปิดทำการ: ทุกวัน เวลา 08:00 - 16:00 น.  
+    หมายเลขโทรศัพท์: 0961010936  
+    Google Maps: https://url.in.th/msYqt   
+    คำอธิบาย: มีบรรยากาศที่เป็นกันเองและอบอุ่น เหมาะสำหรับผู้ที่ต้องการพักผ่อนและเพลิดเพลินกับเครื่องดื่มกาแฟสด   
+    Facebook: https://url.in.th/aWORa
+
+    ---  
+    ชื่อร้าน: บ้านภูแววิว Phuvae VIEW HOME
+    อำเภอ: ทุ่งช้าง
+    ที่อยู่: 275 ม.11 งอบ อำเภอ ทุ่งช้าง น่าน 55130
+    เวลาเปิดทำการ: ทุกวัน เวลา 08:00 - 20:00 น.  
+    หมายเลขโทรศัพท์: 0923905098 
+    Google Maps: https://url.in.th/QJuFp   
+    คำอธิบาย: คาเฟ่และโฮมสเตย์ที่ตั้งอยู่บนดอยสูง มีวิวทิวทัศน์สวยงามของภูเขาและธรรมชาติ เหมาะสำหรับผู้ที่ต้องการพักผ่อนในบรรยากาศสงบ    
+    Facebook: https://www.facebook.com/PhuvaeVIEWHOME/?_rdr
+
+    ---  
+    ชื่อร้าน: ร้านจ๊างน่าน( Chang Nan Coffee & Bakery )
+    อำเภอ: เวียงสา
+    ที่อยู่: 294 หมู่ 3 ถนน เจ้าฟ้า ตำบล กลางเวียง อำเภอเวียงสา น่าน 55110
+    เวลาเปิดทำการ: ทุกวัน เวลา 07:30 – 17:00 น.  
+    หมายเลขโทรศัพท์: 0898984404
+    Google Maps: https://url.in.th/grCjT  
+    คำอธิบาย: Chang Nan Coffee & Bakery เป็นคาเฟ่ในอำเภอเวียงสา จังหวัดน่าน ที่มีบรรยากาศอบอุ่น เสิร์ฟกาแฟรสชาติเข้มข้นและขนมอบโฮมเมดอร่อย.   
+    Facebook: https://www.facebook.com/ChangNanFanClub
+
+    ---  
+    ชื่อร้าน:  Best Time Cafe' & Terrace :: Wiangsa  
+    อำเภอ: เวียงสา
+    ที่อยู่: 141 ตำบล ไหล่น่าน อำเภอเวียงสา น่าน 55110
+    เวลาเปิดทำการ: ทุกวัน เวลา 08:30–18:30 น.  
+    หมายเลขโทรศัพท์: 0935428598 
+    Google Maps: https://url.in.th/qryAn  
+    คำอธิบาย: ร้านกาแฟแปดเหลี่ยม ริมแม่น้ำน่าน   
+    Facebook: https://www.facebook.com/BestTimeCafe.Wiangsa
+
+
+    ---  
+    ชื่อร้าน: เพื่อน Coffee House
+    อำเภอ: เวียงสา
+    ที่อยู่: 181 1 ตำบล กลางเวียง อำเภอเวียงสา น่าน 55110
+    เวลาเปิดทำการ: ทุกวัน เวลา 08:00–17:00 น.  
+    หมายเลขโทรศัพท์: 0645544195
+    Google Maps: https://url.in.th/QRbDK  
+    คำอธิบาย: เพื่อน Coffee House คาเฟ่ในน่านที่มีบรรยากาศสบาย ๆ เสิร์ฟกาแฟหอมกรุ่นและขนมหวานอร่อยในราคาย่อมเยา.    
+    Facebook: https://www.facebook.com/puancoffeehouse
+
+    ---  
+    ชื่อร้าน: นาบุญนำ น่าน
+    อำเภอ: เวียงสา
+    ที่อยู่: 259 ตำบล น้ำปั้ว อำเภอเวียงสา น่าน 55110
+    เวลาเปิดทำการ: ทุกวัน เวลา 08:00–17:00 น.  
+    หมายเลขโทรศัพท์: 0987485464 
+    Google Maps: https://url.in.th/FtpbP   
+    คำอธิบาย: นาบุญนำ คาเฟ่ในน่านที่เสิร์ฟกาแฟหอมกรุ่นและเมนูอาหารท้องถิ่นในบรรยากาศธรรมชาติและผ่อนคลาย.   
+    Facebook: https://www.facebook.com/profile.php?id=100043995583793#
+
+    ---  
+    ชื่อร้าน: Lyn Cafe’
+    อำเภอ: เวียงสา
+    ที่อยู่: ถนนยันตรกิจโกศล ตำบล น้ำปั้ว อำเภอเวียงสา น่าน 55110
+    เวลาเปิดทำการ: ทุกวัน เวลา 07:00–17:00 น.  
+    หมายเลขโทรศัพท์: 0822039829 
+    Google Maps: https://url.in.th/JqjOP   
+    คำอธิบาย: Lyn Cafe’ คาเฟ่สไตล์โมเดิร์นในน่านที่มีบรรยากาศอบอุ่น เสิร์ฟกาแฟคุณภาพและขนมหวานรสเด็ด.    
+    Facebook: https://www.facebook.com/PondTickLyn2020
+
+    """
+]
 # 4. แปลงข้อความเป็นเวกเตอร์ และเพิ่มลงใน Qdrant
 def add_documents_to_qdrant(documents):
     embedding_model = SentenceTransformer("all-MiniLM-L6-v2")  # โหลดโมเดลสำหรับทำ Embedding
@@ -333,8 +777,8 @@ def generate_answer(query):
 
 # 7. สร้างอินเทอร์เฟซด้วย Streamlit
 def main():
-    st.title("RAG Chatbot คาเฟ่ในอำเภอเมือง จังหวัดน่าน")
-    st.write("สวัสดี Chatbot ที่ช่วยตอบคำถามจากเอกสารที่มีอยู่")
+    st.title("RAG Chatbot สำหรับข้อมูลคาเฟ่ยอดฮิตใน จังหวัดน่าน")
+    st.write("สวัสดี! ฉันคือ Chatbot คาเฟ่คาเฟ่ยอดฮิตใน จังหวัดน่าน")
 
     # เพิ่มข้อมูลเอกสารลงใน Qdrant
     add_documents_to_qdrant(documents)
